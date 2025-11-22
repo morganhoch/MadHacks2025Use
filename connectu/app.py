@@ -11,6 +11,10 @@ print("CLIENT ID:", os.getenv("AUTH0_CLIENT_ID"))  # test it immediately
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
+from messaging_routes import messaging_bp
+from messages import DirectMessage
+app.register_blueprint(messaging_bp)
+
 # Set up database path and ensure the folder exists
 basedir = os.path.abspath(os.path.dirname(__file__))
 db_path = os.path.join(basedir, 'instance', 'connectu.db')
