@@ -12,7 +12,7 @@ app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
 # Database setup
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///connectu.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/connectu.db'
 db = SQLAlchemy(app)
 
 # Auth0 setup
