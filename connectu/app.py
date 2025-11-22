@@ -11,11 +11,15 @@ print("CLIENT ID:", os.getenv("AUTH0_CLIENT_ID"))  # test it immediately
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
+# Set up database path and ensure the folder exists
 basedir = os.path.abspath(os.path.dirname(__file__))
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'instance', 'connectu.db')
+db_path = os.path.join(basedir, 'instance', 'connectu.db')
+os.makedirs(os.path.dirname(db_path), exist_ok=True)  # create 'instance' folder if it doesn't exist
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + db_path
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # optional but recommended
 
 # Database setup
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/connectu.db'
 db = SQLAlchemy(app)
 
 # Auth0 setup
