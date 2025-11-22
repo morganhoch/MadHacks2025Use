@@ -43,6 +43,7 @@ class Course(db.Model):
     description = db.Column(db.Text)
     subjects = db.Column(db.String(200))  # comma-separated subjects
     prerequisites = db.Column(db.Text)
+
 # Routes
 @app.route("/")
 def home():
