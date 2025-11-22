@@ -57,6 +57,12 @@ def login():
 def inbox():
     return render_template("inbox.html")
 
+@app.route("/courses/<course_code>")
+def course_detail(course_code):
+    # Look up the course by code
+    course = Course.query.filter_by(course_code=course_code).first_or_404()
+    return render_template("course_detail.html", course=course)
+
 @app.route("/callback")
 def callback():
     token = auth0.authorize_access_token()
