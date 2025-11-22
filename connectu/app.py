@@ -58,6 +58,7 @@ def login():
 
 @app.route("/callback")
 def callback():
+    print("Session before callback:", dict(session))  # debug
     token = auth0.authorize_access_token()
     userinfo = auth0.parse_id_token(token)
     
@@ -66,6 +67,7 @@ def callback():
         'name': userinfo['name'],
         'email': userinfo['email']
     }
+
 
     # Check if user exists in DB, if not add
     user = User.query.filter_by(auth0_id=userinfo['sub']).first()
@@ -91,6 +93,8 @@ def logout():
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-    app.run(debug=True)
+    # disable reloader to prevent session reset
+    app.run(debug=True, use_reloader=False)
+
 
 
