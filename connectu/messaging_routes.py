@@ -29,3 +29,15 @@ def direct_message(recipient_id):
     ).order_by(DirectMessage.timestamp).all()
     
     return render_template('messages.html', messages=messages, recipient=recipient)
+
+@messaging_bp.route('/messages', methods=['GET'])
+def inbox():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    user = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
+    # Get all user IDs this user has msged with (as sender or recipient)
+    recipient_ids = db.session.query(DirectMessage.recipient_id).filter_by(sender_id=user.id).distinct()
+    sender_ids = db.session.query(DirectMessage.sender_id).filter_by(recipient_id=user.id).distinct()
+    contact_ids = set([x[0] for x in recipient_ids] + [x[0] for x in sender_ids if x[0] != user.id])
+    contacts = User.query.filter(User.id.in_(contact_ids)).all()
+    return render_template("inbox.html", contacts=contacts)

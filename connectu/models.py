@@ -9,7 +9,6 @@ class User(db.Model):
     auth0_id = db.Column(db.String(50), unique=True)
     username = db.Column(db.String(80))
     email = db.Column(db.String(120))
-    role = db.Column(db.String(10))  # student or tutor
     bio = db.Column(db.Text)
     subjects = db.Column(db.String(200))
 

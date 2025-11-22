@@ -1,4 +1,4 @@
-from flask import Flask, redirect, url_for, session
+from flask import Flask, redirect, url_for, session, render_template
 from flask_sqlalchemy import SQLAlchemy
 from authlib.integrations.flask_client import OAuth
 from dotenv import load_dotenv
@@ -30,7 +30,6 @@ class User(db.Model):
     auth0_id = db.Column(db.String(100), unique=True, nullable=False)
     username = db.Column(db.String(100))
     email = db.Column(db.String(100))
-    role = db.Column(db.String(50))
 
 # Auth0 setup
 oauth = OAuth(app)
@@ -51,11 +50,9 @@ class Course(db.Model):
     prerequisites = db.Column(db.Text)
 # Routes
 @app.route("/")
-def home():
+def index():
     user = session.get('user')
-    if user:
-        return f"Hello, {user['name']}! <a href='/logout'>Logout</a>"
-    return "Welcome! <a href='/login'>Login</a>"
+    return render_template("index.html", user=user)
 
 @app.route("/login")
 def login():
