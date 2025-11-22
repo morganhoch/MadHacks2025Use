@@ -4,29 +4,29 @@ from authlib.integrations.flask_client import OAuth
 from dotenv import load_dotenv
 import os
 
-# Load .env
-load_dotenv()
+# Load environment variables from .env
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '.env'))
+
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
 # Database setup
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///connectu.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/connectu.db'
 db = SQLAlchemy(app)
 
 # Auth0 setup
 oauth = OAuth(app)
+print("CLIENT ID:", os.getenv("AUTH0_CLIENT_ID"))
+print("DOMAIN:", os.getenv("AUTH0_DOMAIN"))
 auth0 = oauth.register(
-    'auth0',
+    "auth0",
     client_id=os.getenv("AUTH0_CLIENT_ID"),
     client_secret=os.getenv("AUTH0_CLIENT_SECRET"),
-    api_base_url=f'https://{os.getenv("AUTH0_DOMAIN")}',
-    access_token_url=f'https://{os.getenv("AUTH0_DOMAIN")}/oauth/token',
-    authorize_url=f'https://{os.getenv("AUTH0_DOMAIN")}/authorize',
-    client_kwargs={
-        'scope': 'openid profile email',
-    },
+    client_kwargs={"scope": "openid profile email"},
+    server_metadata_url=f'https://{os.getenv("AUTH0_DOMAIN")}/.well-known/openid-configuration'
 )
+
 
 # Database model
 class User(db.Model):
@@ -38,6 +38,13 @@ class User(db.Model):
     bio = db.Column(db.Text)
     subjects = db.Column(db.String(200))
 
+class Course(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    course_code = db.Column(db.String(20), unique=True, nullable=False)
+    title = db.Column(db.String(200))
+    description = db.Column(db.Text)
+    subjects = db.Column(db.String(200))  # comma-separated subjects
+    prerequisites = db.Column(db.Text)
 # Routes
 @app.route("/")
 def home():
