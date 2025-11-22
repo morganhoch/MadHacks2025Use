@@ -17,6 +17,8 @@ db = SQLAlchemy(app)
 
 # Auth0 setup
 oauth = OAuth(app)
+print("CLIENT ID:", os.getenv("AUTH0_CLIENT_ID"))
+print("DOMAIN:", os.getenv("AUTH0_DOMAIN"))
 auth0 = oauth.register(
     'auth0',
     client_id=os.getenv("AUTH0_CLIENT_ID"),
