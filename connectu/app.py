@@ -4,8 +4,9 @@ from authlib.integrations.flask_client import OAuth
 from dotenv import load_dotenv
 import os
 
-# Load .env
+# Load environment variables from .env
 load_dotenv()
+
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
