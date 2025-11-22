@@ -53,6 +53,10 @@ def login():
     redirect_uri = os.getenv("AUTH0_CALLBACK_URL")
     return auth0.authorize_redirect(redirect_uri=redirect_uri, nonce=session["nonce"])
 
+@app.route("/inbox")
+def inbox():
+    return render_template("inbox.html")
+
 @app.route("/callback")
 def callback():
     token = auth0.authorize_access_token()

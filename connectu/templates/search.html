@@ -1,28 +1,23 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Search Courses{% endblock %}</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    </head>
-<body>
-    <h1>Search for a Course</h1>
+{% extends "base.html" %}
 
-    <form action="/search" method="get">
-        <input type="text" name="q" placeholder="Enter course code, e.g. AAE_692" value="{{ query }}">
-        <button type="submit">Search</button>
-    </form>
+{% block title %}Search Courses{% endblock %}
 
-    {% if courses %}
-        <h2>Results:</h2>
-        <ul>
-        {% for c in courses %}
-            <li><a href="/courses/{{ c.course_code }}">{{ c.course_code }} - {{ c.title }}</a></li>
-        {% endfor %}
-        </ul>
-    {% elif query %}
-        <p>No courses found.</p>
-    {% endif %}
-</body>
-</html>
+{% block content %}
+<h1>Search for a Course</h1>
+
+<form action="{{ url_for('search') }}" method="get">
+    <input type="text" name="q" placeholder="Enter course code, e.g. AAE_692" value="{{ query }}">
+    <button type="submit">Search</button>
+</form>
+
+{% if results %}
+    <h2>Results:</h2>
+    <ul>
+    {% for c in results %}
+        <li><a href="{{ url_for('course_detail', course_code=c.course_code) }}">{{ c.course_code }} - {{ c.title }}</a></li>
+    {% endfor %}
+    </ul>
+{% elif query %}
+    <p>No courses found.</p>
+{% endif %}
+{% endblock %}
