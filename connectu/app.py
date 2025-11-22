@@ -69,16 +69,20 @@ def login():
 
 @app.route("/callback")
 def callback():
-    token = auth0.authorize_access_token(state=None, nonce=session.get("nonce"))
+    # 1. Get token (DO NOT pass state or nonce)
+    token = auth0.authorize_access_token()
+
+    # 2. Validate ID token using the stored nonce
     userinfo = auth0.parse_id_token(token, nonce=session.get("nonce"))
 
+    # 3. Save user in session
     session['user'] = {
         'auth0_id': userinfo['sub'],
         'name': userinfo['name'],
         'email': userinfo['email']
     }
 
-    # Add user to DB if not exists
+    # 4. Add user to DB if missing
     user = User.query.filter_by(auth0_id=userinfo['sub']).first()
     if not user:
         user = User(
@@ -91,6 +95,7 @@ def callback():
         db.session.commit()
 
     return redirect(url_for('home'))
+
 
 @app.route("/logout")
 def logout():
