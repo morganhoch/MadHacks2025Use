@@ -1,47 +1,54 @@
 import xml.etree.ElementTree as ET
-from app import app, db, Course
+from app import app, db
+from models import Course
+import os
 
-# Path to your XML sitemap file
-XML_FILE = "courses_sitemap.xml"
+# Path to the database
+db_path = os.path.join(os.path.dirname(__file__), 'instance', 'connectu.db')
 
-# Parse the XML file
-tree = ET.parse(XML_FILE)
-root = tree.getroot()
+# Make sure app is configured correctly
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + db_path
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# XML namespace (from the sitemap spec)
-ns = {"ns": "http://www.sitemaps.org/schemas/sitemap/0.9"}
+# Path to your XML file
+xml_file = os.path.join(os.path.dirname(__file__), 'courses_sitemap.xml')
 
-# Extract course codes from URLs
-course_codes = []
-for url in root.findall("ns:url", ns):
-    loc = url.find("ns:loc", ns).text  # e.g., "https://uwcourses.com/courses/AAE_101"
-    code = loc.split("/")[-1]          # e.g., "AAE_101"
-    course_codes.append(code)
+def load_courses_from_xml(xml_file):
+    tree = ET.parse(xml_file)
+    root = tree.getroot()
+    courses_data = []
+    ns = {'ns': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
 
-if not course_codes:
-    print("No courses found in XML.")
-else:
-    print(f"Found {len(course_codes)} courses. Adding to database...")
+    for url in root.findall('ns:url', ns):
+        loc = url.find('ns:loc', ns).text
+        course_code = loc.split('/')[-1]  # get last part of URL
+        courses_data.append({
+            'course_code': course_code,
+            'title': '',         # Fill in if you have titles
+            'description': ''    # Fill in if you have descriptions
+        })
+    return courses_data
 
-# Insert courses into DB inside application context
-with app.app_context():
-    db.create_all()  # create tables if they don't exist
+def populate_courses():
+    courses_data = load_courses_from_xml(xml_file)
 
-    for code in course_codes:
-        # Check if course already exists
-        existing = Course.query.filter_by(course_code=code).first()
-        if existing:
-            continue  # skip duplicates
+    with app.app_context():
+        # Clear old courses
+        print("Deleting existing courses...")
+        db.session.query(Course).delete()
+        db.session.commit()
 
-        # Create a new course entry
-        course = Course(
-            course_code=code,
-            title="",         # you can fill in title if you have it
-            description="",   # you can fill in description if you have it
-            subjects="",      # optional: you could extract subject from code
-            prerequisites=""
-        )
-        db.session.add(course)
+        # Add new courses
+        print(f"Adding {len(courses_data)} courses...")
+        for c in courses_data:
+            course = Course(
+                course_code=c['course_code'],
+                title=c.get('title', ''),
+                description=c.get('description', '')
+            )
+            db.session.add(course)
+        db.session.commit()
+        print("Courses repopulated successfully!")
 
-    db.session.commit()
-    print("Courses added successfully!")
+if __name__ == "__main__":
+    populate_courses()
