@@ -9,7 +9,7 @@ load_dotenv()
 print("CLIENT ID:", os.getenv("AUTH0_CLIENT_ID"))  # test it immediately
 
 app = Flask(__name__)
-app.secret_key = os.getenv("FLASK_SECRET_KEY")
+app.secret_key = os.getenv("FLASK_SECRET_KEY", "supersecretkey123")
 
 from messaging_routes import messaging_bp
 from models import db, User, DirectMessage  # Import from models.py
@@ -93,8 +93,7 @@ def logout():
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-    # disable reloader to prevent session reset
-    app.run(debug=True, use_reloader=False)
+    app.run(debug=True, use_reloader=False)  # disable reloader
 
 
 
