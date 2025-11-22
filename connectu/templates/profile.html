@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - ConnectU{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-header">
+        <div class="avatar">
+            <img src="{{ user.avatar_url or url_for('static', filename='default-avatar.png') }}" alt="Avatar">
+        </div>
+        <div class="profile-info">
+            <h2>{{ user.username }}</h2>
+            <p>{{ user.email }}</p>
+        </div>
+    </div>
+
+    <div class="profile-details">
+        <h3>Bio</h3>
+        <p>{{ user.bio or "No bio yet." }}</p>
+
+        <h3>Subjects</h3>
+        <p>{{ user.subjects or "No subjects added yet." }}</p>
+    </div>
+
+    <div class="profile-actions">
+        <a href="{{ url_for('edit_profile') }}" class="btn-primary">Edit Profile</a>
+        <a href="{{ url_for('inbox') }}" class="btn-secondary">Message Me</a>
+    </div>
+</div>
+{% endblock %}
