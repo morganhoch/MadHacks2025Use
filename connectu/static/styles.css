@@ -240,3 +240,27 @@ footer {
     border: 1px solid #ffe08a;
 }
 
+.edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.edit-form label {
+    font-weight: 600;
+    color: #1e3a8a;
+}
+
+.edit-form input[type="text"],
+.edit-form textarea {
+    padding: 0.6em 1em;
+    border-radius: 15px;
+    border: 1px solid #ccc;
+    width: 100%;
+    font-family: inherit;
+}
+
+.edit-form button {
+    width: fit-content;
+}
+
