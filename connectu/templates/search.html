@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Search Courses</title>
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Search Courses{% endblock %}</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    </head>
 <body>
     <h1>Search for a Course</h1>
 
