@@ -3,10 +3,11 @@ from flask_sqlalchemy import SQLAlchemy
 from authlib.integrations.flask_client import OAuth
 from dotenv import load_dotenv
 import os
-
+basedir = os.path.abspath(os.path.dirname(__file__))
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'connectu.db')
 # Load environment variables from .env
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '.env'))
-
+print("CLIENT ID:", os.getenv("AUTH0_CLIENT_ID"))  # test it immediately
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
@@ -17,8 +18,6 @@ db = SQLAlchemy(app)
 
 # Auth0 setup
 oauth = OAuth(app)
-print("CLIENT ID:", os.getenv("AUTH0_CLIENT_ID"))
-print("DOMAIN:", os.getenv("AUTH0_DOMAIN"))
 auth0 = oauth.register(
     "auth0",
     client_id=os.getenv("AUTH0_CLIENT_ID"),
