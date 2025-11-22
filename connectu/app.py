@@ -4,7 +4,8 @@ from authlib.integrations.flask_client import OAuth
 from flask_session import Session
 from dotenv import load_dotenv
 import os, secrets
-from models import Course  # if you're using models.py
+from models import db, User, DirectMessage, Course  # if you're using models.py
+from messaging_routes import messaging_bp
 
 # Load env variables
 load_dotenv()
@@ -20,9 +21,6 @@ app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_USE_SIGNER'] = True
 Session(app)
 
-# ===== Import Models =====
-from models import db, User, DirectMessage
-
 # ===== Database Setup =====
 db_path = os.path.join(basedir, 'instance', 'connectu.db')
 os.makedirs(os.path.dirname(db_path), exist_ok=True)
@@ -31,6 +29,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + db_path
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)  # IMPORTANT
+app.register_blueprint(messaging_bp)
 
 # ===== OAuth / Auth0 Setup =====
 oauth = OAuth(app)
@@ -82,11 +81,6 @@ def callback():
         db.session.commit()
 
     return redirect(url_for("index"))
-
-@app.route("/inbox")
-def inbox():
-    # Your inbox logic here
-    return render_template("inbox.html")
 
 @app.route("/profile")
 def profile():
