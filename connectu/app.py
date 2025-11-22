@@ -105,15 +105,15 @@ def edit_profile():
 def search():
     query = request.args.get("q", "").strip()
 
-    if not query:
-        return render_template("search.html", courses=[])
+    # Normalize query
+    cleaned = query.replace("|", "").strip().upper()
 
+    # Search with OR conditions
     results = Course.query.filter(
-        Course.course_code.ilike(f"%{query}%")
-        | Course.title.ilike(f"%{query}%")
+        Course.course_code.like(f"%{cleaned}%")
     ).all()
 
-    return render_template("search.html", courses=results, query=query)
+    return render_template("search.html", query=query, results=results)
 
 @app.route("/logout")
 def logout():
