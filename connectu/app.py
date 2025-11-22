@@ -41,8 +41,6 @@ class User(db.Model):
     email = db.Column(db.String(100))
     role = db.Column(db.String(50))
 
-db.init_app(app)
-
 # Auth0 setup
 oauth = OAuth(app)
 auth0 = oauth.register(
