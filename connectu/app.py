@@ -66,7 +66,7 @@ def login():
 
 @app.route("/callback")
 def callback():
-    token = auth0.authorize_access_token(nonce=session.get("nonce"))
+token = auth0.authorize_access_token(state=None, nonce=session.get("nonce"))
     userinfo = auth0.parse_id_token(token, nonce=session.get("nonce"))
 
     session['user'] = {
