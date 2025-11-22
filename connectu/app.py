@@ -92,8 +92,14 @@ def inbox():
 
 @app.route("/profile")
 def profile():
-    # Your profile logic here
-    return render_template("profile.html")
+    user = session.get("user")  # or fetch from your database
+    return render_template("profile.html", user=user)
+
+@app.route("/profile/edit", methods=["GET", "POST"])
+def edit_profile():
+    user = session.get("user")
+    # TODO: implement form handling here
+    return render_template("edit_profile.html", user=user)
 
 @app.route("/search")
 def search():
