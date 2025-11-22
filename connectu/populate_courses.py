@@ -1,51 +1,53 @@
 import json
-from app import db, Course
+import os
+from app import db, Course, app
 
 # Path to your downloaded JSON file
-JSON_FILE = "uw_courses.json"
+JSON_FILE = "courses.json"  # replace with your actual file path
 
-def load_courses_from_json(json_file):
-    with open(json_file, "r") as f:
-        data = json.load(f)
-    return data
+if not os.path.exists(JSON_FILE):
+    print(f"Error: {JSON_FILE} not found!")
+    exit(1)
 
-def populate_database(course_data):
-    for course_code, course_info in course_data.items():
-        # Extract course reference
-        course_ref = course_info.get("course_reference", {})
-        subjects = course_ref.get("subjects", [])
-        course_number = course_ref.get("course_number", "")
+# Load JSON data
+with open(JSON_FILE, "r") as f:
+    data = json.load(f)
 
-        # Create a unique identifier like "COMPSCI 300"
-        course_identifier = " ".join(subjects) + f" {course_number}"
-
-        # Extract title and description
-        title = course_info.get("title", "No Title")
-        description = course_info.get("description", "")
-
-        # Check if the course already exists
-        existing_course = Course.query.filter_by(course_identifier=course_identifier).first()
-        if existing_course:
-            continue  # Skip duplicates
-
-        # Create Course object
-        course = Course(
-            course_identifier=course_identifier,
-            title=title,
-            description=description
-        )
-
-        # Add to session
-        db.session.add(course)
-
-    # Commit all courses to the database
-    db.session.commit()
-    print(f"Populated {len(course_data)} courses from {JSON_FILE}!")
-
-if __name__ == "__main__":
+# Make sure we're in the application context
+with app.app_context():
     # Create tables if they don't exist
     db.create_all()
 
-    # Load JSON and populate DB
-    courses = load_courses_from_json(JSON_FILE)
-    populate_database(courses)
+    # Optional: clear existing courses
+    # db.session.query(Course).delete()
+    # db.session.commit()
+
+    count = 0
+    for course_id, course_info in data.items():
+        try:
+            course_code = "_".join(course_info["course_reference"]["subjects"]) + f" {course_info['course_reference']['course_number']}"
+            title = course_info.get("title", "")
+            description = course_info.get("description", "")
+            subjects = ",".join(course_info["course_reference"]["subjects"])
+            prerequisites = course_info.get("prerequisites", {}).get("prerequisites_text", "")
+
+            # Check if course already exists
+            existing = Course.query.filter_by(course_code=course_code).first()
+            if existing:
+                continue
+
+            course = Course(
+                course_code=course_code,
+                title=title,
+                description=description,
+                subjects=subjects,
+                prerequisites=prerequisites
+            )
+            db.session.add(course)
+            count += 1
+
+        except KeyError as e:
+            print(f"Skipping course {course_id} due to missing key: {e}")
+
+    db.session.commit()
+    print(f"Added {count} new courses to the database.")
