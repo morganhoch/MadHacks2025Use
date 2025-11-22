@@ -1,36 +1,51 @@
 import json
-import requests
-from app import app, db, Course
+from app import db, Course
 
-STATIC_URL = "https://static.uwcourses.com/courses.json"
+# Path to your downloaded JSON file
+JSON_FILE = "uw_courses.json"
 
-def populate_courses():
-    # Fetch the full course dump
-    resp = requests.get(STATIC_URL)
-    if resp.status_code != 200:
-        print("Failed to download course data")
-        return
+def load_courses_from_json(json_file):
+    with open(json_file, "r") as f:
+        data = json.load(f)
+    return data
 
-    courses_data = resp.json()
-    print(f"Fetched {len(courses_data)} courses.")
+def populate_database(course_data):
+    for course_code, course_info in course_data.items():
+        # Extract course reference
+        course_ref = course_info.get("course_reference", {})
+        subjects = course_ref.get("subjects", [])
+        course_number = course_ref.get("course_number", "")
 
-    with app.app_context():
-        db.create_all()
-        for course_code, data in courses_data.items():
-            # course_code example: COMPSCI_300
-            subjects = "/".join(data["course_reference"]["subjects"])
-            prerequisites = str(data.get("prerequisites", {}))
-            course = Course(
-                course_code=course_code,
-                title=data.get("title", ""),
-                description=data.get("description", ""),
-                subjects=subjects,
-                prerequisites=prerequisites
-            )
-            db.session.add(course)
+        # Create a unique identifier like "COMPSCI 300"
+        course_identifier = " ".join(subjects) + f" {course_number}"
 
-        db.session.commit()
-        print("All courses added to the database!")
+        # Extract title and description
+        title = course_info.get("title", "No Title")
+        description = course_info.get("description", "")
+
+        # Check if the course already exists
+        existing_course = Course.query.filter_by(course_identifier=course_identifier).first()
+        if existing_course:
+            continue  # Skip duplicates
+
+        # Create Course object
+        course = Course(
+            course_identifier=course_identifier,
+            title=title,
+            description=description
+        )
+
+        # Add to session
+        db.session.add(course)
+
+    # Commit all courses to the database
+    db.session.commit()
+    print(f"Populated {len(course_data)} courses from {JSON_FILE}!")
 
 if __name__ == "__main__":
-    populate_courses()
+    # Create tables if they don't exist
+    db.create_all()
+
+    # Load JSON and populate DB
+    courses = load_courses_from_json(JSON_FILE)
+    populate_database(courses)
