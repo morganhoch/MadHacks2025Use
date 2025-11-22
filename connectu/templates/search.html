@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Courses</title>
+</head>
+<body>
+    <h1>Search for a Course</h1>
+
+    <form action="/search" method="get">
+        <input type="text" name="q" placeholder="Enter course code, e.g. AAE_692" value="{{ query }}">
+        <button type="submit">Search</button>
+    </form>
+
+    {% if courses %}
+        <h2>Results:</h2>
+        <ul>
+        {% for c in courses %}
+            <li><a href="/courses/{{ c.course_code }}">{{ c.course_code }} - {{ c.title }}</a></li>
+        {% endfor %}
+        </ul>
+    {% elif query %}
+        <p>No courses found.</p>
+    {% endif %}
+</body>
+</html>
