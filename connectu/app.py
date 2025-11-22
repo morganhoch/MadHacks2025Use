@@ -82,6 +82,17 @@ def callback():
 
     return redirect(url_for("index"))
 
+@app.route("/inbox")
+def inbox():
+    # Your inbox logic here
+    return render_template("inbox.html")
+
+@app.route("/profile")
+def profile():
+    # Your profile logic here
+    return render_template("profile.html")
+
+
 @app.route("/logout")
 def logout():
     session.clear()
