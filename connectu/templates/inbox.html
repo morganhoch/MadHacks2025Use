@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Inbox{% endblock %}
+{% block content %}
+<h2>Your Conversations</h2>
+<ul>
+  {% for contact in contacts %}
+    <li>
+      <a href="{{ url_for('messaging.direct_message', recipient_id=contact.id) }}">
+        {{ contact.username or contact.email }}
+      </a>
+    </li>
+  {% else %}
+    <li>No conversations yet.</li>
+  {% endfor %}
+</ul>
+{% endblock %}
