@@ -4,6 +4,9 @@ from authlib.integrations.flask_client import OAuth
 from flask_session import Session
 from dotenv import load_dotenv
 import os, secrets
+from flask import render_template, request
+from models import Course  # if you're using models.py
+
 
 # Load env variables
 load_dotenv()
@@ -92,6 +95,19 @@ def profile():
     # Your profile logic here
     return render_template("profile.html")
 
+@app.route("/search")
+def search():
+    query = request.args.get("q", "").strip()
+
+    if not query:
+        return render_template("search.html", courses=[])
+
+    results = Course.query.filter(
+        Course.course_code.ilike(f"%{query}%")
+        | Course.title.ilike(f"%{query}%")
+    ).all()
+
+    return render_template("search.html", courses=results, query=query)
 
 @app.route("/logout")
 def logout():
