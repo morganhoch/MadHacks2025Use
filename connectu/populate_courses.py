@@ -1,63 +1,47 @@
-import json
-import os
-from app import db, Course, app
+import xml.etree.ElementTree as ET
+from app import app, db, Course
 
-# Path to your downloaded JSON file
-JSON_FILE = os.path.join(os.path.dirname(__file__), "courses.json")
+# Path to your XML sitemap file
+XML_FILE = "courses_sitemap.xml"
 
-def extract_course_code(course_reference):
-    """
-    Convert CourseReference object into a string code, e.g., COMPSCI_300.
-    """
-    subjects = course_reference.get("subjects", [])
-    course_number = course_reference.get("course_number", "")
-    return "_".join(subjects) + f"_{course_number}"
+# Parse the XML file
+tree = ET.parse(XML_FILE)
+root = tree.getroot()
 
-def extract_subjects(course_reference):
-    """
-    Return comma-separated subjects from CourseReference.
-    """
-    return ", ".join(course_reference.get("subjects", []))
+# XML namespace (from the sitemap spec)
+ns = {"ns": "http://www.sitemaps.org/schemas/sitemap/0.9"}
 
-def populate_courses():
-    with open(JSON_FILE, "r", encoding="utf-8") as f:
-        data = json.load(f)
+# Extract course codes from URLs
+course_codes = []
+for url in root.findall("ns:url", ns):
+    loc = url.find("ns:loc", ns).text  # e.g., "https://uwcourses.com/courses/AAE_101"
+    code = loc.split("/")[-1]          # e.g., "AAE_101"
+    course_codes.append(code)
 
-    # The actual course data might be nested differently; adjust here if needed.
-    # We'll assume top-level 'courses' key contains a list of courses.
-    courses_list = data.get("courses", [])
-    if not courses_list:
-        print("No courses found in JSON.")
-        return
+if not course_codes:
+    print("No courses found in XML.")
+else:
+    print(f"Found {len(course_codes)} courses. Adding to database...")
 
-    for course_info in courses_list:
-        try:
-            ref = course_info["course_reference"]
-            course_code = extract_course_code(ref)
-            subjects = extract_subjects(ref)
-            title = course_info.get("title", "")
-            description = course_info.get("description", "")
+# Insert courses into DB inside application context
+with app.app_context():
+    db.create_all()  # create tables if they don't exist
 
-            # Avoid duplicates
-            existing = Course.query.filter_by(course_code=course_code).first()
-            if existing:
-                continue
+    for code in course_codes:
+        # Check if course already exists
+        existing = Course.query.filter_by(course_code=code).first()
+        if existing:
+            continue  # skip duplicates
 
-            course = Course(
-                course_code=course_code,
-                title=title,
-                description=description,
-                subjects=subjects,
-                prerequisites=""  # optional, fill if you want
-            )
-            db.session.add(course)
-        except Exception as e:
-            print(f"Failed to process course: {course_info}. Error: {e}")
+        # Create a new course entry
+        course = Course(
+            course_code=code,
+            title="",         # you can fill in title if you have it
+            description="",   # you can fill in description if you have it
+            subjects="",      # optional: you could extract subject from code
+            prerequisites=""
+        )
+        db.session.add(course)
 
     db.session.commit()
-    print("Courses populated successfully!")
-
-if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
-        populate_courses()
+    print("Courses added successfully!")
