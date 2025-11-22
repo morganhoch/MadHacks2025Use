@@ -38,6 +38,13 @@ class User(db.Model):
     bio = db.Column(db.Text)
     subjects = db.Column(db.String(200))
 
+class Course(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    course_code = db.Column(db.String(20), unique=True, nullable=False)
+    title = db.Column(db.String(200))
+    description = db.Column(db.Text)
+    subjects = db.Column(db.String(200))  # comma-separated subjects
+    prerequisites = db.Column(db.Text)
 # Routes
 @app.route("/")
 def home():
