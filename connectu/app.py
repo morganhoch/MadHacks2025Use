@@ -12,7 +12,7 @@ app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
 from messaging_routes import messaging_bp
-from messages import DirectMessage
+from models import db, User, DirectMessage  # Import from models.py
 app.register_blueprint(messaging_bp)
 
 # Set up database path and ensure the folder exists
@@ -35,17 +35,6 @@ auth0 = oauth.register(
     client_kwargs={"scope": "openid profile email"},
     server_metadata_url=f'https://{os.getenv("AUTH0_DOMAIN")}/.well-known/openid-configuration'
 )
-
-
-# Database model
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    auth0_id = db.Column(db.String(50), unique=True)
-    username = db.Column(db.String(80))
-    email = db.Column(db.String(120))
-    role = db.Column(db.String(10))  # student or tutor
-    bio = db.Column(db.Text)
-    subjects = db.Column(db.String(200))
 
 class Course(db.Model):
     id = db.Column(db.Integer, primary_key=True)

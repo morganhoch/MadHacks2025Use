@@ -1,12 +1,6 @@
 # messaging_routes.py
 from flask import Blueprint, session, request, redirect, url_for, render_template
-from app import db, User
-from messages import DirectMessage
-
-''' TODO: add the following to the app.py file
-from messaging_routes import messaging_bp
-app.register_blueprint(messaging_bp)
-'''
+from models import db, User, DirectMessage
 
 messaging_bp = Blueprint('messaging', __name__)
 
