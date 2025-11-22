@@ -1,12 +1,10 @@
-from flask import Flask, redirect, url_for, session, render_template, request
+from flask import Flask, redirect, url_for, session, render_template, request, flash
 from flask_sqlalchemy import SQLAlchemy
 from authlib.integrations.flask_client import OAuth
 from flask_session import Session
 from dotenv import load_dotenv
 import os, secrets
 from models import Course  # if you're using models.py
-from flask import flash  # optional, if you want to show a message
-from flask import request, flash
 
 # Load env variables
 load_dotenv()
