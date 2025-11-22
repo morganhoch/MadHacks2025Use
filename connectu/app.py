@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import os, secrets
 from flask import render_template, request
 from models import Course  # if you're using models.py
+from flask import flash  # optional, if you want to show a message
 
 
 # Load env variables
@@ -92,7 +93,13 @@ def inbox():
 
 @app.route("/profile")
 def profile():
-    user = session.get("user")  # or fetch from your database
+    user = session.get("user")
+    if not user:
+        # Optional: flash a message
+        flash("Please sign in to view your profile.", "warning")
+        return redirect(url_for("login"))
+    
+    # User is logged in, render profile page
     return render_template("profile.html", user=user)
 
 @app.route("/profile/edit", methods=["GET", "POST"])
