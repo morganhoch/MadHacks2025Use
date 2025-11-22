@@ -21,3 +21,9 @@ class DirectMessage(db.Model):
 
     sender = db.relationship('User', foreign_keys=[sender_id], backref='sent_messages', lazy=True)
     recipient = db.relationship('User', foreign_keys=[recipient_id], backref='received_messages', lazy=True)
+
+class Course(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    course_code = db.Column(db.String(20), unique=True, nullable=False)
+    title = db.Column(db.String(200))
+    description = db.Column(db.Text)
