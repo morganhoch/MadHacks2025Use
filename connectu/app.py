@@ -7,7 +7,7 @@ import os, secrets
 from flask import render_template, request
 from models import Course  # if you're using models.py
 from flask import flash  # optional, if you want to show a message
-
+from flask import request, flash
 
 # Load env variables
 load_dotenv()
@@ -104,8 +104,32 @@ def profile():
 
 @app.route("/profile/edit", methods=["GET", "POST"])
 def edit_profile():
-    user = session.get("user")
-    # TODO: implement form handling here
+    # Make sure user is logged in
+    user_session = session.get("user")
+    if not user_session:
+        flash("Please sign in to edit your profile.", "warning")
+        return redirect(url_for("login"))
+
+    # Fetch user from DB
+    user = User.query.filter_by(auth0_id=user_session["auth0_id"]).first()
+    if not user:
+        flash("User not found.", "warning")
+        return redirect(url_for("index"))
+
+    if request.method == "POST":
+        # Update user info
+        user.username = request.form.get("username", user.username)
+        user.bio = request.form.get("bio", user.bio)
+        user.subjects = request.form.get("subjects", user.subjects)
+        
+        db.session.commit()  # Save changes
+
+        # Update session info
+        session["user"]["name"] = user.username
+        flash("Profile updated successfully!", "success")
+        return redirect(url_for("profile"))
+
+    # Render form for GET request
     return render_template("edit_profile.html", user=user)
 
 @app.route("/search")
