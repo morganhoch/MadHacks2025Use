@@ -84,14 +84,19 @@ def callback():
 
 @app.route("/profile")
 def profile():
-    user = session.get("user")
-    if not user:
-        # Optional: flash a message
+    user_session = session.get("user")
+    if not user_session:
         flash("Please sign in to view your profile.", "warning")
         return redirect(url_for("login"))
-    
-    # User is logged in, render profile page
+
+    # Fetch latest info from database
+    user = User.query.filter_by(auth0_id=user_session["auth0_id"]).first()
+    if not user:
+        flash("User not found.", "warning")
+        return redirect(url_for("index"))
+
     return render_template("profile.html", user=user)
+
 
 @app.route("/profile/edit", methods=["GET", "POST"])
 def edit_profile():
