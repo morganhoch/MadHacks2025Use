@@ -221,3 +221,22 @@ footer {
     background: #daf4ff;
 }
 
+.flash-messages {
+    max-width: 700px;
+    margin: 1em auto;
+    padding: 0 1em;
+}
+
+.flash {
+    padding: 1em;
+    border-radius: 10px;
+    margin-bottom: 1em;
+    font-weight: 600;
+}
+
+.flash.warning {
+    background: #ffecb3;
+    color: #856404;
+    border: 1px solid #ffe08a;
+}
+

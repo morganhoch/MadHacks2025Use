@@ -14,8 +14,8 @@
                 <a href="{{ url_for('index') }}">Home</a>
                 <a href="{{ url_for('search') }}">Search</a>
                 <a href="{{ url_for('inbox') }}">Inbox</a>
-                <a href="{{ url_for('profile') }}">Profile</a>
                 {% if session.get('user') %}
+                    <a href="{{ url_for('profile') }}">Profile</a>
                     <a href="{{ url_for('logout') }}" class="btn-logout">Logout</a>
                 {% else %}
                     <a href="{{ url_for('login') }}" class="btn-login">Login</a>
@@ -23,6 +23,17 @@
             </div>
         </nav>
     </header>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
 
     <main id="main-content">
         {% block content %}{% endblock %}

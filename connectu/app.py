@@ -5,7 +5,8 @@ from flask_session import Session
 from dotenv import load_dotenv
 import os, secrets
 from models import Course  # if you're using models.py
-
+from flask import flash  # optional, if you want to show a message
+from flask import request, flash
 
 # Load env variables
 load_dotenv()
@@ -91,28 +92,58 @@ def inbox():
 
 @app.route("/profile")
 def profile():
-    user = session.get("user")  # or fetch from your database
+    user = session.get("user")
+    if not user:
+        # Optional: flash a message
+        flash("Please sign in to view your profile.", "warning")
+        return redirect(url_for("login"))
+    
+    # User is logged in, render profile page
     return render_template("profile.html", user=user)
 
 @app.route("/profile/edit", methods=["GET", "POST"])
 def edit_profile():
-    user = session.get("user")
-    # TODO: implement form handling here
+    # Make sure user is logged in
+    user_session = session.get("user")
+    if not user_session:
+        flash("Please sign in to edit your profile.", "warning")
+        return redirect(url_for("login"))
+
+    # Fetch user from DB
+    user = User.query.filter_by(auth0_id=user_session["auth0_id"]).first()
+    if not user:
+        flash("User not found.", "warning")
+        return redirect(url_for("index"))
+
+    if request.method == "POST":
+        # Update user info
+        user.username = request.form.get("username", user.username)
+        user.bio = request.form.get("bio", user.bio)
+        user.subjects = request.form.get("subjects", user.subjects)
+        
+        db.session.commit()  # Save changes
+
+        # Update session info
+        session["user"]["name"] = user.username
+        flash("Profile updated successfully!", "success")
+        return redirect(url_for("profile"))
+
+    # Render form for GET request
     return render_template("edit_profile.html", user=user)
 
 @app.route("/search")
 def search():
     query = request.args.get("q", "").strip()
 
-    if not query:
-        return render_template("search.html", courses=[])
+    # Normalize query
+    cleaned = query.replace("|", "").strip().upper()
 
+    # Search with OR conditions
     results = Course.query.filter(
-        Course.course_code.ilike(f"%{query}%")
-        | Course.title.ilike(f"%{query}%")
+        Course.course_code.like(f"%{cleaned}%")
     ).all()
 
-    return render_template("search.html", courses=results, query=query)
+    return render_template("search.html", query=query, results=results)
 
 @app.route("/logout")
 def logout():
