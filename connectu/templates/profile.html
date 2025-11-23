@@ -46,7 +46,7 @@
             {% for c in user_courses %}
                 <li>
                     <a href="{{ url_for('course_detail', course_code=c.course_code) }}">
-                        {{ c.course_code }} - {{ c.title }}
+                        {{ c.course_code }}
                     </a>
                 </li>
             {% endfor %}
