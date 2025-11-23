@@ -288,7 +288,7 @@ def join_course(course_id):
         uc = UserCourse(user_id=user.id, course_id=course.id, status=status, term=term)
         db.session.add(uc)
         db.session.commit()
-        flash(f"You joined {course.course_code} as a {status} for {term}!", "success")
+        flash(f"You joined {course.course_code.replace('_', ' ')} as a {status} for {term}!", "success")
 
     return redirect(request.referrer or url_for('course_detail', course_code=course.course_code))
 
