@@ -1,8 +1,13 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
-
 db = SQLAlchemy()
+
+# Association table for users joining courses
+user_courses = db.Table('user_courses',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+    db.Column('course_id', db.Integer, db.ForeignKey('course.id'), primary_key=True)
+)
 
 # Database model
 class User(db.Model):
@@ -12,6 +17,9 @@ class User(db.Model):
     email = db.Column(db.String(120))
     bio = db.Column(db.Text)
     subjects = db.Column(db.String(200))
+    
+    # Relationship to courses
+    courses = db.relationship('Course', secondary=user_courses, backref='students')
 
 class DirectMessage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
