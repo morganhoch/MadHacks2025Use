@@ -13,14 +13,14 @@
     {% if results %}
         <h2>Results:</h2>
         <ul>
-        {% for c in results %}
-            <li style="margin-bottom: 14px;">
-                {{ c.course_code }} - {{ c.title }}
-                <form action="{{ url_for('course_detail', course_code=c.course_code) }}" method="get" style="display:inline;">
-                    <button type="submit" class="btn btn-primary btn-sm">View Course</button>
-                </form>
-            </li>
-        {% endfor %}
+            {% for c in results %}
+                <li style="margin-bottom: 14px;">
+                    {{ c.course_code.replace('_', ' ') }} - {{ c.title }}
+                    <form action="{{ url_for('course_detail', course_code=c.course_code) }}" method="get" style="display:inline;">
+                        <button type="submit" class="btn btn-primary btn-sm">View Course</button>
+                    </form>
+                </li>
+            {% endfor %}
         </ul>
     {% elif query %}
         <p>No courses found.</p>
