@@ -52,7 +52,7 @@ def index():
     if user_session:
         user_obj = User.query.filter_by(auth0_id=user_session["auth0_id"]).first()
         if user_obj:
-            user_courses = user_obj.courses
+            user_courses = [uc.course for uc in user_obj.user_courses]
     return render_template("index.html", user=user_obj, user_courses=user_courses)
 
 
