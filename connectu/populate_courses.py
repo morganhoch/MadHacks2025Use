@@ -1,14 +1,9 @@
 import xml.etree.ElementTree as ET
-from app import app, db
-from models import Course
+from models import Course, db
 import os
 
 # Path to the database
 db_path = os.path.join(os.path.dirname(__file__), 'instance', 'connectu.db')
-
-# Make sure app is configured correctly
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + db_path
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Path to your XML file
 xml_file = os.path.join(os.path.dirname(__file__), 'courses_sitemap.xml')
@@ -31,7 +26,8 @@ def load_courses_from_xml(xml_file):
 
 def populate_courses():
     courses_data = load_courses_from_xml(xml_file)
-
+    from app import app
+    
     with app.app_context():
         # Clear old courses
         print("Deleting existing courses...")
