@@ -5,7 +5,7 @@
 {% block content %}
 <div class="course-container">
     <div class="course-main-info-right">
-        <h1>{{ course.course_code }} - {{ course.title }}</h1>
+        <h1>{{ course.course_code }}</h1>
 
         {% if course.description %}
             <p>{{ course.description }}</p>
@@ -13,45 +13,42 @@
 
         {# Check if current user is enrolled #}
         {% if user %}
-            {% set enrolled = false %}
-            {% for uc in course.students %}
-                {% if uc.user.id == user.id %}
-                    {% set enrolled = true %}
-                {% endif %}
-            {% endfor %}
+    {% set enrolled = false %}
+    {% for uc in course.students %}
+        {% if uc.user.id == user.id %}
+            {% set enrolled = true %}
+        {% endif %}
+    {% endfor %}
 
-            {% if enrolled %}
-                <form action="{{ url_for('leave_course', course_id=course.id) }}" method="post" style="display:inline;">
-                    <button type="submit" class="btn btn-danger">Leave Course</button>
-                </form>
-            {% else %}
-                <form action="{{ url_for('join_course', course_id=course.id) }}" method="post" class="join-course-form">
-                    <label for="status">Status:</label>
-                    <select name="status" id="status" required>
-                        <option value="">-- Select --</option>
-                        <option value="Tutor">Tutor</option>
-                        <option value="Student">Student</option>
-                    </select>
+    {% if enrolled %}
+        <!-- Leave Course -->
+        <form action="{{ url_for('leave_course', course_id=course.id) }}" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-danger">Leave Course</button>
+        </form>
+    {% else %}
+        <!-- JOIN COURSE FORM -->
+        <form action="{{ url_for('join_course', course_id=course.id) }}" method="post" class="join-course-form">
 
-                    <label for="term">Term:</label>
-                    <select name="term" id="term" required>
-                        <option value="">-- Select --</option>
-                        <option value="Fall 2020">Fall 2020</option>
-                        <option value="Spring 2021">Spring 2021</option>
-                        <option value="Fall 2021">Fall 2021</option>
-                        <option value="Spring 2022">Spring 2022</option>
-                        <option value="Fall 2022">Fall 2022</option>
-                        <option value="Spring 2023">Spring 2023</option>
-                        <option value="Fall 2023">Fall 2023</option>
-                        <option value="Spring 2024">Spring 2024</option>
-                        <option value="Fall 2024">Fall 2024</option>
-                        <option value="Spring 2025">Spring 2025</option>
-                        <option value="Fall 2025">Fall 2025</option>
-                    </select>
+            <label for="status">Your Status in This Class:</label>
+            <select name="status" required>
+                <option value="">Select…</option>
+                <option value="Student">Student</option>
+                <option value="Tutor">Tutor</option>
+            </select>
 
-                    <button type="submit" class="btn btn-success">Join Course</button>
-                </form>
-            {% endif %}
+            <label for="term">Term Taken:</label>
+            <select name="term" required>
+                <option value="">Select…</option>
+                <option value="Fall 2025">Fall 2025</option>
+                <option value="Spring 2025">Spring 2025</option>
+                <option value="Fall 2024">Fall 2024</option>
+                <option value="Spring 2024">Spring 2024</option>
+            </select>
+
+            <button type="submit" class="btn btn-primary">Join Course</button>
+        </form>
+    {% endif %}
+{% endif %}
 
         <hr>
         <h2>Ask a Question</h2>
