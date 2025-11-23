@@ -208,20 +208,26 @@ def join_course(course_id):
     course = Course.query.get_or_404(course_id)
 
     # Get status and term from form
-    status = request.form.get("status", "student")
-    term = request.form.get("term", None)
+    # Get status and term from form
+    status = request.form.get('status')
+    term = request.form.get('term')
+
+    if not status or not term:
+        flash("Please select both status and term.", "warning")
+        return redirect(request.referrer or url_for('course_detail', course_code=course.course_code))
 
     # Check if already joined
     existing = UserCourse.query.filter_by(user_id=user.id, course_id=course.id).first()
     if existing:
-        flash("You have already joined this course.", "warning")
+        flash("You have already joined this course.", "info")
     else:
-        user_course = UserCourse(user=user, course=course, status=status, term=term)
-        db.session.add(user_course)
+        # Create new association object
+        uc = UserCourse(user_id=user.id, course_id=course.id, status=status, term=term)
+        db.session.add(uc)
         db.session.commit()
-        flash(f"You have joined {course.course_code} as a {status} for {term}!")
+        flash(f"You joined {course.course_code} as a {status} for {term}!", "success")
 
-    return redirect(request.referrer or url_for('search'))
+    return redirect(request.referrer or url_for('course_detail', course_code=course.course_code))
 
 
 # ===== Run App =====
