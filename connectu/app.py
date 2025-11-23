@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 import os, secrets
 from models import db, User, DirectMessage, Course  # if you're using models.py
 from messaging_routes import messaging_bp
+from flask import session, redirect, url_for, flash
+from models import db, User, Course
 
 # Load env variables
 load_dotenv()
@@ -106,6 +108,24 @@ def profile():
         return redirect(url_for("index"))
 
     return render_template("profile.html", user=user)
+
+@app.route("/join_course/<int:course_id>", methods=['POST'])
+def join_course(course_id):
+    if 'user' not in session:
+        flash("You must be logged in to join a course.")
+        return redirect(url_for('login'))
+
+    user = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
+    course = Course.query.get_or_404(course_id)
+
+    if course in user.courses:
+        flash("You have already joined this course.")
+    else:
+        user.courses.append(course)
+        db.session.commit()
+        flash(f"You have joined {course.course_code}!")
+
+    return redirect(url_for('course_detail', course_code=course.course_code))
 
 
 @app.route("/profile/edit", methods=["GET", "POST"])
