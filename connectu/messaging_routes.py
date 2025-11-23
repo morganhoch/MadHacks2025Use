@@ -6,9 +6,6 @@ messaging_bp = Blueprint('messaging', __name__)
 
 @messaging_bp.route('/messages/<int:recipient_id>', methods=['GET', 'POST'])
 def direct_message(recipient_id):
-    if 'user' not in session:
-        return redirect(url_for('login'))
-    
     sender = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
     recipient = User.query.get(recipient_id)
     if not recipient:
