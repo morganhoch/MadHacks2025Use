@@ -11,15 +11,25 @@
         <p>{{ course.description }}</p>
     {% endif %}
 
-    {% if user in course.students %}
-    <form action="{{ url_for('leave_course', course_id=course.id) }}" method="post" style="display:inline;">
-        <button type="submit" class="btn btn-danger">Leave Course</button>
-    </form>
+    {# Check if current user is enrolled #}
+    {% if user %}
+        {% set enrolled = false %}
+        {% for uc in course.students %}
+            {% if uc.user.id == user.id %}
+                {% set enrolled = true %}
+            {% endif %}
+        {% endfor %}
+
+        {% if enrolled %}
+            <form action="{{ url_for('leave_course', course_id=course.id) }}" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-danger">Leave Course</button>
+            </form>
+        {% endif %}
     {% endif %}
 
     <hr>
     <h2>Ask a Question</h2>
-    {% if session.user %}
+    {% if user %}
         <form method="POST">
             <textarea name="content" placeholder="Type your question here..." required></textarea>
             <button type="submit" name="question">Post Question</button>
@@ -29,24 +39,24 @@
     {% endif %}
 
     <h2>Questions & Answers</h2>
-        {% if questions %}
-            {% for q in questions %}
-                <div class="question-block">
-                    <p><strong>{{ q.user.username }}</strong> asked:</p>
-                    <p>{{ q.content }}</p>
+    {% if questions %}
+        {% for q in questions %}
+            <div class="question-block">
+                <p><strong>{{ q.user.username }}</strong> asked:</p>
+                <p>{{ q.content }}</p>
 
-                    <ul>
-                    {% for a in q.answers %}
-                        <li><strong>{{ a.user.username }}</strong> answered: {{ a.content }}</li>
-                    {% endfor %}
-                    </ul>
+                <ul>
+                {% for a in q.answers %}
+                    <li><strong>{{ a.user.username }}</strong> answered: {{ a.content }}</li>
+                {% endfor %}
+                </ul>
 
-                    {# Add remove button if the current user posted the question #}
-                    {% if session.user and session.user['auth0_id'] == q.user.auth0_id %}
-                        <form action="{{ url_for('remove_question', question_id=q.id) }}" method="post" style="display:inline;">
-                            <button type="submit" class="btn-danger btn-sm">Remove Question</button>
-                        </form>
-                    {% endif %}
+                {# Remove question button if the current user posted it #}
+                {% if user and user.auth0_id == q.user.auth0_id %}
+                    <form action="{{ url_for('remove_question', question_id=q.id) }}" method="post" style="display:inline;">
+                        <button type="submit" class="btn-danger btn-sm">Remove Question</button>
+                    </form>
+                {% endif %}
 
                     {% if session.user %}
                         <form method="POST">
