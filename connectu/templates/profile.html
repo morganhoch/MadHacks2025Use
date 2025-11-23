@@ -62,10 +62,11 @@
         <h3>Joined Classes</h3>
         {% if user_courses %}
             <ul>
-            {% for c in user_courses %}
+            {% for uc in user_courses %}
                 <li>
-                    <a href="{{ url_for('course_detail', course_code=c.course_code) }}">
-                        {{ c.course_code }}
+                    <a href="{{ url_for('course_detail', course_code=uc.course_code) }}">
+                        {{ uc.course_code }}
+                        – {{ uc.status }} ({{ uc.term }})
                     </a>
                 </li>
             {% endfor %}
