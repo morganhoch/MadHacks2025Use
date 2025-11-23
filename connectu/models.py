@@ -73,12 +73,11 @@ class UserCourse(db.Model):
     course = db.relationship('Course', back_populates='students')
 
 class Document(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    filename = db.Column(db.String(200), nullable=False)
-    filepath = db.Column(db.String(300), nullable=False)
+   id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(200))
+    course_id = db.Column(db.Integer, db.ForeignKey('course.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
-    course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-
-    course = db.relationship('Course', backref='documents', lazy=True)
-    user = db.relationship('User', backref='uploaded_documents', lazy=True)
+    
+    course = db.relationship('Course', back_populates='documents')
+    user = db.relationship('User')
