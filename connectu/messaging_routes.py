@@ -68,3 +68,28 @@ def add_friend(user_id):
     db.session.add(fr)
     db.session.commit()
     return redirect(url_for('profile', user_id=target_user.id))  # go back to profile
+
+@messaging_bp.route("/respond_friend/<int:friendship_id>/<action>", methods=["POST"])
+def respond_friend(friendship_id, action):
+    """Accept or deny a pending friend request."""
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    fr = Friendship.query.get(friendship_id)
+    if not fr or fr.status != 'pending':
+        return "Invalid request", 400
+
+    current_user = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
+    # Only the requested user can respond
+    if fr.requested_id != current_user.id:
+        return "Not authorized", 403
+
+    if action == "accept":
+        fr.status = "accepted"
+    elif action == "deny":
+        fr.status = "denied"
+    else:
+        return "Invalid action", 400
+
+    db.session.commit()
+    return redirect(url_for("profile", user_id=current_user.id))
