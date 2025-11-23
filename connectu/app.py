@@ -4,20 +4,17 @@ from authlib.integrations.flask_client import OAuth
 from flask_session import Session
 from dotenv import load_dotenv
 import os, secrets
-from models import db, User, DirectMessage, Course  # your models
-from messaging_routes import messaging_bp  # optional if messaging is still used
+from models import db, User, DirectMessage, Course, Question, Answer  # import all models at once
+from messaging_routes import messaging_bp
 from populate_courses import populate_courses
 from flask_ngrok import run_with_ngrok
-from models import db, User, DirectMessage, Course, Question, Answer
-
-app = Flask(__name__)
-run_with_ngrok(app)
 
 # ===== Load environment variables =====
 load_dotenv()
 
 # ===== Flask App Setup =====
 app = Flask(__name__)
+run_with_ngrok(app)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "supersecretkey123")
 
 # ===== Session Setup =====
@@ -29,17 +26,12 @@ app.config['SESSION_USE_SIGNER'] = True
 Session(app)
 
 # ===== Database Setup =====
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-# ===== Database Setup =====
-db_path = os.path.join(basedir, 'instance', 'connectu.db')
-os.makedirs(os.path.dirname(db_path), exist_ok=True)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + db_path
+# Use Railway Postgres
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")  # Railway DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
-# Register messaging blueprint if you still want messages
+# ===== Register blueprints =====
 app.register_blueprint(messaging_bp)
 
 # ===== OAuth / Auth0 Setup =====
@@ -58,17 +50,11 @@ def index():
     user_session = session.get("user")
     user_obj = None
     user_courses = []
-
     if user_session:
         user_obj = User.query.filter_by(auth0_id=user_session["auth0_id"]).first()
         if user_obj:
-            user_courses = user_obj.courses  # courses the user has joined
-
-    return render_template(
-        "index.html",
-        user=user_obj,
-        user_courses=user_courses
-    )
+            user_courses = user_obj.courses
+    return render_template("index.html", user=user_obj, user_courses=user_courses)
 
 @app.route("/login")
 def login():
@@ -127,22 +113,14 @@ def course_detail(course_code):
             return redirect(url_for("login"))
         
         content = request.form.get("content")
+        user_obj = User.query.filter_by(auth0_id=user_session["auth0_id"]).first()
         if "question" in request.form:
-            new_question = Question(
-                course_id=course.id,
-                user_id=User.query.filter_by(auth0_id=user_session["auth0_id"]).first().id,
-                content=content
-            )
+            new_question = Question(course_id=course.id, user_id=user_obj.id, content=content)
             db.session.add(new_question)
         elif "answer" in request.form:
             question_id = int(request.form.get("question_id"))
-            new_answer = Answer(
-                question_id=question_id,
-                user_id=User.query.filter_by(auth0_id=user_session["auth0_id"]).first().id,
-                content=content
-            )
+            new_answer = Answer(question_id=question_id, user_id=user_obj.id, content=content)
             db.session.add(new_answer)
-
         db.session.commit()
         flash("Your post has been added.", "success")
         return redirect(url_for("course_detail", course_code=course_code))
@@ -150,83 +128,15 @@ def course_detail(course_code):
     questions = Question.query.filter_by(course_id=course.id).order_by(Question.timestamp.desc()).all()
     return render_template("course_detail.html", course=course, questions=questions)
 
-
 @app.route("/search")
 def search():
     query = request.args.get("q", "").strip()
     cleaned = query.replace("|", "").strip().upper()
     results = Course.query.filter(Course.course_code.like(f"%{cleaned}%")).all()
-
     user_obj = None
     if 'user' in session:
         user_obj = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
-
     return render_template("search.html", query=query, results=results, user=user_obj)
 
 @app.route("/profile")
-def profile():
-    user_session = session.get("user")
-    if not user_session:
-        flash("Please sign in to view your profile.", "warning")
-        return redirect(url_for("login"))
-
-    user = User.query.filter_by(auth0_id=user_session["auth0_id"]).first()
-    if not user:
-        flash("User not found.", "warning")
-        return redirect(url_for("index"))
-
-    return render_template("profile.html", user=user, user_courses=user.courses)
-
-@app.route("/profile/<int:user_id>", endpoint="profile_view")
-def profile_view(user_id):
-    user = User.query.get_or_404(user_id)
-    return render_template("profile.html", user=user, user_courses=user.courses)
-
-@app.route("/profile/edit", methods=["GET", "POST"])
-def edit_profile():
-    user_session = session.get("user")
-    if not user_session:
-        flash("Please sign in to edit your profile.", "warning")
-        return redirect(url_for("login"))
-
-    user = User.query.filter_by(auth0_id=user_session["auth0_id"]).first()
-    if not user:
-        flash("User not found.", "warning")
-        return redirect(url_for("index"))
-
-    if request.method == "POST":
-        user.username = request.form.get("username", user.username)
-        user.bio = request.form.get("bio", user.bio)
-        user.subjects = request.form.get("subjects", user.subjects)
-        db.session.commit()
-        session["user"]["name"] = user.username
-        flash("Profile updated successfully!", "success")
-        return redirect(url_for("profile"))
-
-    return render_template("edit_profile.html", user=user)
-
-@app.route("/join_course/<int:course_id>", methods=['POST'])
-def join_course(course_id):
-    if 'user' not in session:
-        flash("You must be logged in to join a course.")
-        return redirect(url_for('login'))
-
-    user = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
-    course = Course.query.get_or_404(course_id)
-
-    if course in user.courses:
-        flash("You have already joined this course.")
-    else:
-        user.courses.append(course)
-        db.session.commit()
-        flash(f"You have joined {course.course_code}!")
-
-    return redirect(request.referrer or url_for('search'))
-
-
-# ===== Run App =====
-if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
-        populate_courses()
-    app.run(debug=True)
+def profile
