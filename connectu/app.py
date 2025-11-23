@@ -53,7 +53,7 @@ def index():
     if user_session:
         user_obj = User.query.filter_by(auth0_id=user_session["auth0_id"]).first()
         if user_obj:
-            user_courses = user_obj.courses  # many-to-many relationship
+            user_courses = user_obj.courses  # courses the user has joined
 
     return render_template(
         "index.html",
@@ -113,7 +113,7 @@ def course_detail(course_code):
     course = Course.query.filter_by(course_code=course_code).first_or_404()
 
     # Get all users who joined this course
-    enrolled_users = course.users  # assuming a many-to-many relationship: Course.users
+    enrolled_users = course.students  # <-- correct relationship
 
     return render_template(
         "course_detail.html",
@@ -127,7 +127,6 @@ def search():
     cleaned = query.replace("|", "").strip().upper()
     results = Course.query.filter(Course.course_code.like(f"%{cleaned}%")).all()
 
-    # Logged-in user (if any)
     user_obj = None
     if 'user' in session:
         user_obj = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
@@ -194,11 +193,9 @@ def join_course(course_id):
 
     return redirect(request.referrer or url_for('search'))
 
-
-
 # ===== Run App =====
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-        populate_courses()  # optional
+        populate_courses()
     app.run(debug=True)
