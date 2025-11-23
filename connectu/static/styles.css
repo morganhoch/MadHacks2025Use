@@ -328,3 +328,28 @@ footer {
 .course-users li a:hover {
     text-decoration: underline;
 }
+
+.avatar-options {
+    display: flex;
+    gap: 1em;
+    margin-bottom: 1em;
+}
+
+.avatar-options input[type="radio"] {
+    display: none; /* hide the radio button */
+}
+
+.avatar-choice {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.avatar-options input[type="radio"]:checked + .avatar-choice {
+    border-color: #50b9ff; /* highlight selected avatar */
+    transform: scale(1.05);
+}
+
