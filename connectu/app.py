@@ -124,32 +124,14 @@ def course_detail(course_code):
     if 'user' in session:
         user_obj = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
 
-    # Handle POST (questions/answers)...
-    if request.method == "POST":
-        if not user_obj:
-            flash("Please log in to post a question or answer.", "warning")
-            return redirect(url_for("login"))
-        
-        content = request.form.get("content")
-        if "question" in request.form:
-            new_question = Question(course_id=course.id, user_id=user_obj.id, content=content)
-            db.session.add(new_question)
-        elif "answer" in request.form:
-            question_id = int(request.form.get("question_id"))
-            new_answer = Answer(question_id=question_id, user_id=user_obj.id, content=content)
-            db.session.add(new_answer)
-        db.session.commit()
-        flash("Your post has been added.", "success")
-        return redirect(url_for("course_detail", course_code=course_code))
+    # Fetch Madgrades info if available
+    madgrades_info = None
+    if course.madgrades_uuid:
+        madgrades_info = get_madgrades_course(course.madgrades_uuid)
 
-    # Get questions and enrolled users
+    # Existing Q&A logic...
     questions = Question.query.filter_by(course_id=course.id).order_by(Question.timestamp.desc()).all()
     enrolled_users = course.students
-
-    # ===== NEW: fetch Madgrades info =====
-    madgrades_course = None
-    if course.madgrades_uuid:
-        madgrades_course = get_madgrades_course(course.madgrades_uuid)
 
     return render_template(
         "course_detail.html",
@@ -157,8 +139,9 @@ def course_detail(course_code):
         questions=questions,
         user=user_obj,
         enrolled_users=enrolled_users,
-        madgrades_course=madgrades_course  # <-- pass this to template
+        madgrades_info=madgrades_info  # pass it to the template
     )
+
 
 
 @app.route("/search")
