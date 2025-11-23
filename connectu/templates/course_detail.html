@@ -29,28 +29,28 @@
         <p>No one has joined this course yet.</p>
     {% endif %}
 
-    {% if madgrades %}
+    {% if madgrades_info %}
     <hr>
     <h2>Official Course Info</h2>
-    <p><strong>Description:</strong> {{ madgrades.description or "N/A" }}</p>
-    <p><strong>Prerequisites:</strong> {{ madgrades.prerequisites or "None listed" }}</p>
+    <p><strong>Description:</strong> {{ madgrades_info.description or "N/A" }}</p>
+    <p><strong>Prerequisites:</strong> {{ madgrades_info.prerequisites or "None listed" }}</p>
     <p><strong>Cross-listed Subjects:</strong> 
-        {% if madgrades.cross_listed_subjects %}
-            {{ madgrades.cross_listed_subjects | join(", ") }}
+        {% if madgrades_info.cross_listed_subjects %}
+            {{ madgrades_info.cross_listed_subjects | join(", ") }}
         {% else %}
             None
         {% endif %}
     </p>
     <p><strong>Instructor(s):</strong>
-        {% if madgrades.instructors %}
-            {% for inst in madgrades.instructors %}
+        {% if madgrades_info.instructors %}
+            {% for inst in madgrades_infos.instructors %}
                 {{ inst.name }}{% if not loop.last %}, {% endif %}
             {% endfor %}
         {% else %}
             N/A
         {% endif %}
     </p>
-    <p><strong>Past Offerings:</strong> {{ madgrades.offerings_count or 0 }}</p>
+    <p><strong>Past Offerings:</strong> {{ madgrades_info.offerings_count or 0 }}</p>
     {% endif %}
 
     <hr>
