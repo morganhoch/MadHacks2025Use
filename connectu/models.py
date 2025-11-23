@@ -21,7 +21,6 @@ class User(db.Model):
     email = db.Column(db.String(120))
     bio = db.Column(db.Text)
     available_days = db.Column(db.PickleType)   # stores a list, e.g. ['Monday', 'Wednesday']
-    available_times = db.Column(db.PickleType)  # stores a list, e.g. ['Morning', 'Evening']
     personal_links = db.Column(db.Text)  # Can store multiple links, separated by commas or newlines
     avatar_url = db.Column(db.String(200))  # <-- This stores the selected avatar
     user_courses = db.relationship('UserCourse', back_populates='user', lazy=True)
