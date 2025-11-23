@@ -11,16 +11,16 @@
             <p>{{ course.description }}</p>
         {% endif %}
 
-        {# Check if current user is enrolled #}
+        {# Determine if current user is enrolled #}
         {% if user %}
-            {% set enrolled = false %}
+            {% set ns = namespace(enrolled=false) %}
             {% for uc in course.students %}
                 {% if uc.user.id == user.id %}
-                    {% set enrolled = true %}
+                    {% set ns.enrolled = true %}
                 {% endif %}
             {% endfor %}
 
-            {% if enrolled %}
+            {% if ns.enrolled %}
                 <form action="{{ url_for('leave_course', course_id=course.id) }}" method="post" style="display:inline;">
                     <button type="submit" class="btn btn-danger">Leave Course</button>
                 </form>
@@ -51,7 +51,6 @@
                         {% endfor %}
                     </ul>
 
-                    {# Remove question button if the current user posted it #}
                     {% if user and user.auth0_id == q.user.auth0_id %}
                         <form action="{{ url_for('remove_question', question_id=q.id) }}" method="post" style="display:inline;">
                             <button type="submit" class="btn-danger btn-sm">Remove Question</button>
@@ -78,7 +77,10 @@
             <ul class="course-users">
                 {% for u in enrolled_users %}
                     <li>
-                        <a href="{{ url_for('profile_view', user_id=u.id) }}">{{ u.username }}</a>
+                        <a href="{{ url_for('profile_view', user_id=u.user.id) }}">
+                            {{ u.user.username }}
+                        </a>
+                        – {{ u.status }} ({{ u.term }})
                     </li>
                 {% endfor %}
             </ul>
