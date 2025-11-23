@@ -124,6 +124,7 @@ def course_detail(course_code):
     if 'user' in session:
         user_obj = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
 
+    # Handle POST (questions/answers)...
     if request.method == "POST":
         if not user_obj:
             flash("Please log in to post a question or answer.", "warning")
@@ -141,19 +142,24 @@ def course_detail(course_code):
         flash("Your post has been added.", "success")
         return redirect(url_for("course_detail", course_code=course_code))
 
-    # Get questions for this course
+    # Get questions and enrolled users
     questions = Question.query.filter_by(course_id=course.id).order_by(Question.timestamp.desc()).all()
-    
-    # THIS IS THE NEW LINE: get users enrolled in the course
-    enrolled_users = course.students  # 'students' comes from your backref in models
+    enrolled_users = course.students
+
+    # ===== NEW: fetch Madgrades info =====
+    madgrades_course = None
+    if course.madgrades_uuid:
+        madgrades_course = get_madgrades_course(course.madgrades_uuid)
 
     return render_template(
         "course_detail.html",
         course=course,
         questions=questions,
         user=user_obj,
-        enrolled_users=enrolled_users
+        enrolled_users=enrolled_users,
+        madgrades_course=madgrades_course  # <-- pass this to template
     )
+
 
 @app.route("/search")
 def search():
