@@ -134,13 +134,16 @@
                 {% set icon = url_for('static', filename='icons/file.png') %}
             {% endif %}
 
-            <div class="doc-preview" style="border: 1px solid #ba0c2f; border-radius: 8px; padding: 10px; display: flex; align-items: center; gap: 10px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-                 <img src="{{ url_for('static', filename='doc.png') }}">
-                <div style="flex: 1;">
-                    <a href="{{ url_for('static', filename='uploads/' + doc.filename) }}" target="_blank" style="font-weight: 700; color: #ba0c2f;">{{ doc.filename }}</a>
-                    <p style="font-size: 0.85em; color: #555; margin: 3px 0;">Uploaded by {{ doc.user.username }} at {{ doc.uploaded_at.strftime('%Y-%m-%d %H:%M') }}</p>
-                </div>
-            </div>
+            <div class="doc-preview">
+    <img src="{{ url_for('static', filename='doc.png') }}" class="doc-icon" alt="Document icon">
+    <div class="doc-info">
+        <a href="{{ url_for('static', filename='uploads/' + doc.filename) }}" target="_blank">
+            {{ doc.filename }}
+        </a>
+        <p>Uploaded by {{ doc.user.username }} at {{ doc.uploaded_at.strftime('%Y-%m-%d %H:%M') }}</p>
+    </div>
+</div>
+
         {% endfor %}
     </div>
 </section>
