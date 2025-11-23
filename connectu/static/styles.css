@@ -389,3 +389,31 @@ footer {
     font-weight: bold;
     font-size: 1.1rem;
 }
+
+.class-documents {
+    margin-top: 2em;
+    padding: 1em;
+    background: #fff0f3; /* UW theme */
+    border-radius: 10px;
+}
+
+.class-documents h3 {
+    margin-bottom: 0.8em;
+    color: #ba0c2f;
+}
+
+.class-documents form {
+    display: flex;
+    gap: 1em;
+    margin-bottom: 1em;
+}
+
+.class-documents ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.class-documents li {
+    margin-bottom: 0.5em;
+}
+
