@@ -18,7 +18,22 @@
     <p>{{ user.bio or "No bio yet." }}</p>
 
     <h3>Availability</h3>
-    <p>{{ user.availability or "Not set yet." }}</p>
+    {% if user.available_times %}
+      <ul>
+        {% for day, times in user.available_times.items() %}
+          <li>
+            <strong>{{ day }}:</strong>
+            {% if times %}
+              {{ times | join(', ') }}
+            {% else %}
+              No times selected
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>Not set yet.</p>
+    {% endif %}    
 
     <h3>Personal Links</h3>
     {% if user.personal_links %}

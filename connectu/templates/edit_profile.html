@@ -24,21 +24,27 @@
               </label>
             {% endfor %}
           </div>
-          <h4>What times are you most likely available?</h4>
-          <div class="time-blocks">
-            {% for period, hours in [
-                ('Morning', '6AM–12PM'),
-                ('Afternoon', '12PM–6PM'),
-                ('Evening', '6PM–12AM'),
-                ('Midnight', '12AM–6AM')
-              ] %}
-              <label class="time-block">
-                <input type="checkbox" name="available_times" value="{{ period }}"
-                    {% if period in (user.available_times or []) %}checked{% endif %}>
-                {{ period }} <span class="timing">{{ hours }}</span>
-              </label>
-            {% endfor %}
-          </div>
+        
+          <h4>Choose times for each day</h4>
+          {% for day in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"] %}
+            <div class="day-time-block">
+              <h5>{{ day }}</h5>
+              <div class="time-blocks">
+                {% for period, hours in [
+                    ('Morning', '6AM–12PM'),
+                    ('Afternoon', '12PM–6PM'),
+                    ('Evening', '6PM–12AM'),
+                    ('Midnight', '12AM–6AM')
+                  ] %}
+                  <label class="time-block">
+                    <input type="checkbox" name="available_times[{{ day }}][]" value="{{ period }}"
+                       {% if user.available_times and user.available_times.get(day) and (period in user.available_times.get(day)) %}checked{% endif %}>
+                    {{ period }} <span class="timing">{{ hours }}</span>
+                  </label>
+                {% endfor %}
+              </div>
+            </div>
+          {% endfor %}
         </div>
         
 
