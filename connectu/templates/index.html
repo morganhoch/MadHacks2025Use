@@ -1,8 +1,23 @@
 {% extends "base.html" %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Home - ConnectU{% endblock %}
 
 {% block content %}
-  <h2>Welcome to ConnectU!</h2>
-  <p>This is your landing page. Use the navbar above to explore the app.</p>
+<h1>Welcome{% if user %}, {{ user.username }}{% endif %}!</h1>
+
+{% if user_courses %}
+    <h2>Your Joined Classes</h2>
+    <div class="courses-grid">
+        {% for c in user_courses %}
+            <div class="course-box">
+                <a href="{{ url_for('course_detail', course_code=c.course_code) }}">
+                    <h3>{{ c.course_code }}</h3>
+                    <p>{{ c.title }}</p>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p>You haven't joined any classes yet. Search and join some!</p>
+{% endif %}
 {% endblock %}
