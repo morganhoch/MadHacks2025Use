@@ -37,6 +37,9 @@ class Course(db.Model):
     course_code = db.Column(db.String(200), unique=True, nullable=False)
     title = db.Column(db.String(200))
     description = db.Column(db.Text)
+    
+    # Add this line to store the Madgrades UUID
+    madgrades_uuid = db.Column(db.String(100), nullable=True)
 
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
