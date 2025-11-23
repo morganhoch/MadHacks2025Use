@@ -106,6 +106,7 @@
                 {% for u in enrolled_users %}
                     <li>
                         <a href="{{ url_for('profile_view', user_id=u.id) }}">{{ u.username }}</a>
+                    – {{ uc.status }} ({{ uc.term }})
                     </li>
                 {% endfor %}
             </ul>
