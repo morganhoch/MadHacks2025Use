@@ -7,14 +7,13 @@ import os, secrets
 from models import db, User, DirectMessage, Course, Question, Answer  # import all models at once
 from messaging_routes import messaging_bp
 from populate_courses import populate_courses
-from flask_ngrok import run_with_ngrok
+
 
 # ===== Load environment variables =====
 load_dotenv()
 
 # ===== Flask App Setup =====
 app = Flask(__name__)
-run_with_ngrok(app)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "supersecretkey123")
 
 # ===== Session Setup =====
