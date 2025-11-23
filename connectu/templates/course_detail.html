@@ -10,6 +10,12 @@
         <p>{{ course.description }}</p>
     {% endif %}
 
+    {% if user in course.students %}
+    <form action="{{ url_for('leave_course', course_id=course.id) }}" method="post" style="display:inline;">
+        <button type="submit" class="btn btn-danger">Leave Course</button>
+    </form>
+    {% endif %}
+
     <h2>Users in this course</h2>
     {% if enrolled_users %}
         <ul class="course-users">
