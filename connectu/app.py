@@ -139,4 +139,70 @@ def search():
     return render_template("search.html", query=query, results=results, user=user_obj)
 
 @app.route("/profile")
-def profile
+def profile():
+    user_session = session.get("user")
+    if not user_session:
+        flash("Please sign in to view your profile.", "warning")
+        return redirect(url_for("login"))
+
+    user = User.query.filter_by(auth0_id=user_session["auth0_id"]).first()
+    if not user:
+        flash("User not found.", "warning")
+        return redirect(url_for("index"))
+
+    return render_template("profile.html", user=user, user_courses=user.courses)
+
+@app.route("/profile/<int:user_id>", endpoint="profile_view")
+def profile_view(user_id):
+    user = User.query.get_or_404(user_id)
+    return render_template("profile.html", user=user, user_courses=user.courses)
+
+@app.route("/profile/edit", methods=["GET", "POST"])
+def edit_profile():
+    user_session = session.get("user")
+    if not user_session:
+        flash("Please sign in to edit your profile.", "warning")
+        return redirect(url_for("login"))
+
+    user = User.query.filter_by(auth0_id=user_session["auth0_id"]).first()
+    if not user:
+        flash("User not found.", "warning")
+        return redirect(url_for("index"))
+
+    if request.method == "POST":
+        user.username = request.form.get("username", user.username)
+        user.bio = request.form.get("bio", user.bio)
+        user.subjects = request.form.get("subjects", user.subjects)
+        db.session.commit()
+        session["user"]["name"] = user.username
+        flash("Profile updated successfully!", "success")
+        return redirect(url_for("profile"))
+
+    return render_template("edit_profile.html", user=user)
+
+@app.route("/join_course/<int:course_id>", methods=['POST'])
+def join_course(course_id):
+    if 'user' not in session:
+        flash("You must be logged in to join a course.")
+        return redirect(url_for('login'))
+
+    user = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
+    course = Course.query.get_or_404(course_id)
+
+    if course in user.courses:
+        flash("You have already joined this course.")
+    else:
+        user.courses.append(course)
+        db.session.commit()
+        flash(f"You have joined {course.course_code}!")
+
+    return redirect(request.referrer or url_for('search'))
+
+
+# ===== Run App =====
+if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
+        populate_courses()
+    app.run(debug=True)
+
