@@ -300,3 +300,19 @@ footer {
     font-size: 0.95em;
     color: #555;
 }
+
+.course-container {
+    margin-top: 20px;
+    padding: 20px;
+}
+
+.course-users li {
+    padding: 5px 0;
+}
+.course-users li a {
+    color: #007bff;
+    text-decoration: none;
+}
+.course-users li a:hover {
+    text-decoration: underline;
+}
