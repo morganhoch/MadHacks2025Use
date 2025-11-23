@@ -7,14 +7,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header>
+   <header>
     <nav id="navbar">
-        <!-- Make the logo a clickable home link -->
+        <!-- Logo is now a link -->
         <a href="{{ url_for('index') }}" class="logo">ConnectU</a>
 
         <div class="nav-links">
-            <!-- Remove separate Home link -->
-            <!-- <a href="{{ url_for('index') }}">Home</a> -->
             <a href="{{ url_for('search') }}">Search</a>
             <a href="{{ url_for('messaging.inbox') }}">Inbox</a>
             {% if session.get('user') %}
@@ -26,6 +24,7 @@
         </div>
     </nav>
 </header>
+
 
     <!-- Flash messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
