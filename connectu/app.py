@@ -127,7 +127,12 @@ def course_detail(course_code):
     # Fetch Madgrades info if available
     madgrades_info = None
     if course.madgrades_uuid:
+        print(f"Fetching Madgrades data for UUID: {course.madgrades_uuid}")  # debug print
         madgrades_info = get_madgrades_course(course.madgrades_uuid)
+        print("Madgrades response:", madgrades_info)  # debug print
+
+    else:
+        print("No Madgrades UUID for this course")  # debug print
 
     # Existing Q&A logic...
     questions = Question.query.filter_by(course_id=course.id).order_by(Question.timestamp.desc()).all()
@@ -141,7 +146,6 @@ def course_detail(course_code):
         enrolled_users=enrolled_users,
         madgrades_info=madgrades_info  # pass it to the template
     )
-
 
 
 @app.route("/search")
