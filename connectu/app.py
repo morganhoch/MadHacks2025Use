@@ -228,5 +228,6 @@ def join_course(course_id):
 if __name__ == "__main__":
     with app.app_context():
         xml_file = os.path.join(os.path.dirname(__file__), "courses_sitemap.xml")
+        db.create_all()
         populate_courses(app, xml_file)  # populate courses from XML
     app.run()
