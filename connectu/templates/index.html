@@ -3,6 +3,13 @@
 {% block title %}Home - ConnectU{% endblock %}
 
 {% block content %}
+
+<div class="home-logo-right">
+    <img src="{{ url_for('static', filename='connectlogo.png') }}"
+         alt="ConnectU Logo"
+         style="height: 38px;">
+</div>
+
 <h1>Welcome{% if user %}, {{ user.username }}{% endif %}!</h1>
 
 {% if user_courses %}
