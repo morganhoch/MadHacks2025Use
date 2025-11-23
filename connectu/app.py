@@ -115,19 +115,40 @@ def logout():
 def inbox():
     return render_template("inbox.html")
 
-@app.route("/courses/<course_code>")
+@app.route("/course/<course_code>", methods=["GET", "POST"])
 def course_detail(course_code):
-    # Look up the course by code
     course = Course.query.filter_by(course_code=course_code).first_or_404()
 
-    # Get all users who joined this course
-    enrolled_users = course.students  # <-- correct relationship
+    if request.method == "POST":
+        user_session = session.get("user")
+        if not user_session:
+            flash("Please log in to post a question or answer.", "warning")
+            return redirect(url_for("login"))
+        
+        content = request.form.get("content")
+        if "question" in request.form:
+            new_question = Question(
+                course_id=course.id,
+                user_id=User.query.filter_by(auth0_id=user_session["auth0_id"]).first().id,
+                content=content
+            )
+            db.session.add(new_question)
+        elif "answer" in request.form:
+            question_id = int(request.form.get("question_id"))
+            new_answer = Answer(
+                question_id=question_id,
+                user_id=User.query.filter_by(auth0_id=user_session["auth0_id"]).first().id,
+                content=content
+            )
+            db.session.add(new_answer)
 
-    return render_template(
-        "course_detail.html",
-        course=course,
-        enrolled_users=enrolled_users
-    )
+        db.session.commit()
+        flash("Your post has been added.", "success")
+        return redirect(url_for("course_detail", course_code=course_code))
+
+    questions = Question.query.filter_by(course_id=course.id).order_by(Question.timestamp.desc()).all()
+    return render_template("course_detail.html", course=course, questions=questions)
+
 
 @app.route("/search")
 def search():
@@ -201,39 +222,6 @@ def join_course(course_id):
 
     return redirect(request.referrer or url_for('search'))
 
-@app.route("/course/<course_code>", methods=["GET", "POST"])
-def course_detail(course_code):
-    course = Course.query.filter_by(course_code=course_code).first_or_404()
-
-    if request.method == "POST":
-        user_session = session.get("user")
-        if not user_session:
-            flash("Please log in to post a question or answer.", "warning")
-            return redirect(url_for("login"))
-        
-        content = request.form.get("content")
-        if "question" in request.form:
-            new_question = Question(
-                course_id=course.id,
-                user_id=User.query.filter_by(auth0_id=user_session["auth0_id"]).first().id,
-                content=content
-            )
-            db.session.add(new_question)
-        elif "answer" in request.form:
-            question_id = int(request.form.get("question_id"))
-            new_answer = Answer(
-                question_id=question_id,
-                user_id=User.query.filter_by(auth0_id=user_session["auth0_id"]).first().id,
-                content=content
-            )
-            db.session.add(new_answer)
-
-        db.session.commit()
-        flash("Your post has been added.", "success")
-        return redirect(url_for("course_detail", course_code=course_code))
-
-    questions = Question.query.filter_by(course_id=course.id).order_by(Question.timestamp.desc()).all()
-    return render_template("course_detail.html", course=course, questions=questions)
 
 # ===== Run App =====
 if __name__ == "__main__":
