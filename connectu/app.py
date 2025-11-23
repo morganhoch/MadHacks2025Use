@@ -8,6 +8,7 @@ from models import db, User, DirectMessage, Course  # your models
 from messaging_routes import messaging_bp  # optional if messaging is still used
 from populate_courses import populate_courses
 from flask_ngrok import run_with_ngrok
+from models import db, User, DirectMessage, Course, Question, Answer
 
 app = Flask(__name__)
 run_with_ngrok(app)
