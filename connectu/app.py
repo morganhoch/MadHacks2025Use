@@ -8,6 +8,8 @@ from models import db, User, DirectMessage, Course  # if you're using models.py
 from messaging_routes import messaging_bp
 from flask import session, redirect, url_for, flash
 from models import db, User, Course
+from populate_courses import populate_courses
+
 
 # Load env variables
 load_dotenv()
@@ -227,5 +229,6 @@ def profile_view(user_id):
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
+        populate_courses()
     app.run(debug=True)
 
