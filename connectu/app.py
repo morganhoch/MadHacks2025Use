@@ -155,6 +155,9 @@ def remove_question(question_id):
     if question.user_id != user_obj.id:
         flash("You can only remove your own questions.", "danger")
         return redirect(url_for('course_detail', course_code=question.course.course_code))
+    
+    course_code = question.course.course_code
+    
     db.session.delete(question)
     db.session.commit()
     flash("Your question has been removed.", "success")
@@ -225,13 +228,14 @@ def edit_profile():
         return redirect(url_for("index"))
 
     if request.method == "POST":
-        user.username = request.form.get("username", user.username)
-        user.bio = request.form.get("bio", user.bio)
-        db.session.commit()
-        session["user"]["name"] = user.username
-        flash("Profile updated successfully!", "success")
-        return redirect(url_for("profile"))
-
+    user.username = request.form.get("username", user.username)
+    user.bio = request.form.get("bio", user.bio)
+    user.availability = request.form.get("availability", user.availability)
+    user.personal_links = request.form.get("personal_links", user.personal_links)
+    db.session.commit()
+    session["user"]["name"] = user.username
+    flash("Profile updated successfully!", "success")
+    return redirect(url_for("profile"))
     return render_template("edit_profile.html", user=user)
 
 
