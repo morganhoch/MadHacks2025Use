@@ -12,8 +12,35 @@
         <label for="bio">Bio</label>
         <textarea name="bio" id="bio" rows="4">{{ user.bio }}</textarea>
 
-        <label for="availability">Availability</label>
-        <input type="text" name="availability" id="availability" value="{{ user.availability or '' }}" placeholder="e.g., Mon 3-5pm, Wed 6-8pm">
+        <label>Availability</label>
+        <div class="availability-section">
+          <h4>Which days are you typically available?</h4>
+          <div class="days-list">
+            {% for day in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"] %}
+              <label class="day-block">
+                <input type="checkbox" name="available_days" value="{{ day }}"
+                    {% if day in (user.available_days or []) %}checked{% endif %}>
+                {{ day }}
+              </label>
+            {% endfor %}
+          </div>
+          <h4>What times are you most likely available?</h4>
+          <div class="time-blocks">
+            {% for period, hours in [
+                ('Morning', '6AM–12PM'),
+                ('Afternoon', '12PM–6PM'),
+                ('Evening', '6PM–12AM'),
+                ('Midnight', '12AM–6AM')
+              ] %}
+              <label class="time-block">
+                <input type="checkbox" name="available_times" value="{{ period }}"
+                    {% if period in (user.available_times or []) %}checked{% endif %}>
+                {{ period }} <span class="timing">{{ hours }}</span>
+              </label>
+            {% endfor %}
+          </div>
+        </div>
+        
 
         <label for="personal_links">Personal Links</label>
         <textarea name="personal_links" id="personal_links" rows="3" placeholder="Zoom, LinkedIn, etc.">{{ user.personal_links or '' }}</textarea>
