@@ -193,7 +193,11 @@ footer {
     display: flex;
     gap: 1em;
 }
-
+.btn-sm {
+    padding: 4px 10px;
+    font-size: 0.85em;
+    border-radius: 4px;
+}
 .btn-primary {
     background: #50b9ff;
     color: white;
@@ -319,7 +323,6 @@ footer {
     border-radius: 8px;
     padding: 16px;
 }
-
 
 .course-users li {
     padding: 5px 0;
