@@ -12,9 +12,6 @@
         <label for="bio">Bio</label>
         <textarea name="bio" id="bio" rows="4">{{ user.bio }}</textarea>
 
-        <label for="subjects">Subjects</label>
-        <input type="text" name="subjects" id="subjects" value="{{ user.subjects }}">
-
         <button type="submit" class="btn-primary">Save Changes</button>
         <a href="{{ url_for('profile') }}" class="btn-secondary">Cancel</a>
     </form>
