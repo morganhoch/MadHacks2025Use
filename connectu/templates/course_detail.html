@@ -75,12 +75,12 @@
         <h2>Users in this course</h2>
         {% if enrolled_users %}
             <ul class="course-users">
-                {% for u in enrolled_users %}
+                {% for uc in enrolled_users %}
                     <li>
-                        <a href="{{ url_for('profile_view', user_id=u.user.id) }}">
-                            {{ u.user.username }}
+                        <a href="{{ url_for('profile_view', user_id=uc.user.id) }}">
+                            {{ uc.user.username }}
                         </a>
-                        – {{ u.status }} ({{ u.term }})
+                        – {{ uc.status }} ({{ uc.term }})
                     </li>
                 {% endfor %}
             </ul>
