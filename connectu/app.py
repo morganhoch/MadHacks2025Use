@@ -161,6 +161,9 @@ def remove_question(question_id):
     if question.user_id != user_obj.id:
         flash("You can only remove your own questions.", "danger")
         return redirect(url_for('course_detail', course_code=question.course.course_code))
+    
+    course_code = question.course.course_code
+    
     db.session.delete(question)
     db.session.commit()
     flash("Your question has been removed.", "success")
