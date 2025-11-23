@@ -114,6 +114,28 @@ def course_detail(course_code):
     if 'user' in session:
         user_obj = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
 
+    if request.method == "POST" and user_obj:
+        # Handle new question
+        if "question" in request.form:
+            content = request.form.get("content")
+            if content:
+                q = Question(course_id=course.id, user_id=user_obj.id, content=content)
+                db.session.add(q)
+                db.session.commit()
+                flash("Question posted!", "success")
+                return redirect(url_for("course_detail", course_code=course.course_code))
+
+        # Handle new answer
+        if "answer" in request.form:
+            content = request.form.get("content")
+            question_id = request.form.get("question_id")
+            if content and question_id:
+                a = Answer(question_id=question_id, user_id=user_obj.id, content=content)
+                db.session.add(a)
+                db.session.commit()
+                flash("Answer posted!", "success")
+                return redirect(url_for("course_detail", course_code=course.course_code))
+                
     # Existing Q&A logic
     questions = Question.query.filter_by(course_id=course.id).order_by(Question.timestamp.desc()).all()
     enrolled_users = [uc.user for uc in course.students]  # this is a list of UserCourse objects
