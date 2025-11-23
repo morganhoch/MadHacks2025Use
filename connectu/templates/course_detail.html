@@ -98,6 +98,28 @@
         {% endif %}
     </div>
 
+    <section class="class-documents">
+    <h3>Class Documents</h3>
+
+    <!-- Upload Form -->
+    <form action="{{ url_for('upload_document', course_id=course.id) }}" method="POST" enctype="multipart/form-data">
+        <input type="file" name="document" required>
+        <button type="submit" class="btn-primary">Upload</button>
+    </form>
+
+    <!-- Display uploaded documents -->
+    <ul>
+        {% for doc in course.documents %}
+            <li>
+                <a href="{{ url_for('static', filename='uploads/' + doc.filename) }}" target="_blank">
+                    {{ doc.filename }}
+                </a> — uploaded by {{ doc.user.username }} at {{ doc.uploaded_at.strftime('%Y-%m-%d %H:%M') }}
+            </li>
+        {% endfor %}
+    </ul>
+</section>
+
+    
     <div class="enrolled-users-sidebar">
         <h2>Users in this course</h2>
         {% if enrolled_users %}
