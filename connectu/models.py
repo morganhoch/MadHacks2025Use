@@ -30,11 +30,7 @@ class DirectMessage(db.Model):
 
 class Course(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-<<<<<<< HEAD
-    course_code = db.Column(db.String(100), unique=True, nullable=False)
-=======
     course_code = db.Column(db.String(200), unique=True, nullable=False)
->>>>>>> a16ea04685ab6323310182f56c69a086238b0a67
     title = db.Column(db.String(200))
     description = db.Column(db.Text)
 
