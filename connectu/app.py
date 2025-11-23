@@ -83,7 +83,6 @@ def callback():
             username=userinfo["name"],
             email=userinfo["email"],
             bio="",
-            subjects=""
         )
         db.session.add(new_user)
         db.session.commit()
@@ -229,7 +228,6 @@ def edit_profile():
     if request.method == "POST":
         user.username = request.form.get("username", user.username)
         user.bio = request.form.get("bio", user.bio)
-        user.subjects = request.form.get("subjects", user.subjects)
         db.session.commit()
         session["user"]["name"] = user.username
         flash("Profile updated successfully!", "success")
