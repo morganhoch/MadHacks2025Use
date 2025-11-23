@@ -3,16 +3,22 @@
 {% block content %}
 <h2>Your Conversations</h2>
     {% if contacts %}
-        <ul>
-        {% for contact in contacts %}
-            <li>
-            <a href="{{ url_for('messaging.direct_message', recipient_id=contact.id) }}">
-                {{ contact.username or contact.email }}
-            </a>
-            </li>
-        {% endfor %}
-        </ul>
-        {% else %}
-        <p>No conversations yet.</p>
+    <ul>
+    {% for row in contacts %}
+        <li>
+        <a href="{{ url_for('messaging.direct_message', recipient_id=row.user.id) }}">
+            {{ row.user.username or row.user.email }}
+        </a>
+        {% if row.is_sender %}
+            (they are sender; sender_id={{ row.sender_id }})
+        {% endif %}
+        {% if row.is_recipient %}
+            (they are recipient; recipient_id={{ row.recipient_id }})
+        {% endif %}
+        </li>
+    {% endfor %}
+    </ul>
+    {% else %}
+    <p>No conversations yet.</p>
     {% endif %}
 {% endblock %}
