@@ -106,15 +106,17 @@ def inbox():
 @app.route("/course/<course_code>", methods=["GET", "POST"])
 def course_detail(course_code):
     course = Course.query.filter_by(course_code=course_code).first_or_404()
+    user_obj = None
+
+    if 'user' in session:
+        user_obj = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
 
     if request.method == "POST":
-        user_session = session.get("user")
-        if not user_session:
+        if not user_obj:
             flash("Please log in to post a question or answer.", "warning")
             return redirect(url_for("login"))
         
         content = request.form.get("content")
-        user_obj = User.query.filter_by(auth0_id=user_session["auth0_id"]).first()
         if "question" in request.form:
             new_question = Question(course_id=course.id, user_id=user_obj.id, content=content)
             db.session.add(new_question)
@@ -126,8 +128,19 @@ def course_detail(course_code):
         flash("Your post has been added.", "success")
         return redirect(url_for("course_detail", course_code=course_code))
 
+    # Get questions for this course
     questions = Question.query.filter_by(course_id=course.id).order_by(Question.timestamp.desc()).all()
-    return render_template("course_detail.html", course=course, questions=questions, user=user_obj)
+    
+    # THIS IS THE NEW LINE: get users enrolled in the course
+    enrolled_users = course.students  # 'students' comes from your backref in models
+
+    return render_template(
+        "course_detail.html",
+        course=course,
+        questions=questions,
+        user=user_obj,
+        enrolled_users=enrolled_users
+    )
 
 @app.route("/search")
 def search():
