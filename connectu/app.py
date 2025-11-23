@@ -226,8 +226,7 @@ def edit_profile():
     if not user:
         flash("User not found.", "warning")
         return redirect(url_for("index"))
-
-  if request.method == "POST":
+    if request.method == "POST":
       user.username = request.form.get("username", user.username)
       user.bio = request.form.get("bio", user.bio)
       user.availability = request.form.get("availability", user.availability)
