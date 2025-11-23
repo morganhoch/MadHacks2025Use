@@ -33,6 +33,11 @@ header {
     font-size: 2em;
     font-weight: 900;
     letter-spacing: 1px;
+    color: white;
+}
+
+#navbar .logo:hover {
+    opacity: 0.85; /* subtle hover effect */
 }
 
 #navbar .nav-links a {
