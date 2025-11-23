@@ -153,8 +153,12 @@ def search():
 @app.route("/leave_course/<int:course_id>", methods=['POST'])
 def leave_course(course_id):
     if 'user' not in session:
-        flash("You must be logged in to leave a course.")
+        flash("You must be logged in to leave a course.", "warning")
         return redirect(url_for('login'))
+
+    user = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
+    course = Course.query.get_or_404(course_id)
+
     uc = UserCourse.query.filter_by(user_id=user.id, course_id=course.id).first()
     if uc:
         db.session.delete(uc)
@@ -162,6 +166,7 @@ def leave_course(course_id):
         flash(f"You have left {course.course_code}.", "info")
     else:
         flash("You are not enrolled in this course.", "warning")
+
     return redirect(url_for('course_detail', course_code=course.course_code))
 
 
