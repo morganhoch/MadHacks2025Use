@@ -6,8 +6,8 @@ from dotenv import load_dotenv
 import os, secrets
 from models import db, User, DirectMessage, Course, Question, Answer  # import all models at once
 from messaging_routes import messaging_bp
-from populate_courses import populate_courses_db
-import requests
+from populate_courses import populate_courses
+import import requests
 import os
 
 # ===== Load environment variables =====
@@ -233,7 +233,7 @@ def join_course(course_id):
 # ===== Run App =====
 if __name__ == "__main__":
     with app.app_context():
-        db.create_all()
-        populate_courses()
+        xml_file = os.path.join(os.path.dirname(__file__), "courses_sitemap.xml")
+        populate_courses(app, xml_file)  # pass app and XML path
     app.run()
 
