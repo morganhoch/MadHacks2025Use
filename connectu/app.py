@@ -161,6 +161,38 @@ def logout():
         f"client_id={os.getenv('AUTH0_CLIENT_ID')}"
     )
 
+@app.route("/profile/<int:user_id>", endpoint="profile_view")
+def profile_view(user_id):
+    user = User.query.get_or_404(user_id)
+
+    # Friends: either requester or requested with status 'accepted'
+    friends = User.query.join(Friendship, ((Friendship.requester_id == User.id) | (Friendship.requested_id == User.id))).filter(
+        ((Friendship.requester_id == user.id) | (Friendship.requested_id == user.id)) &
+        (Friendship.status == 'accepted') &
+        (User.id != user.id)
+    ).all()
+
+    # Pending requests where current user is requested
+    pending_requests = Friendship.query.filter_by(requested_id=user.id, status='pending').all()
+
+    # Potential friends: all users except current user, current friends, and users with pending requests (sent or received)
+    excluded_ids = [user.id]  # start with current user
+    excluded_ids += [f.id for f in friends]
+    pending_sent = Friendship.query.filter_by(requester_id=user.id, status='pending').all()
+    pending_received = Friendship.query.filter_by(requested_id=user.id, status='pending').all()
+    excluded_ids += [fr.requested_id for fr in pending_sent]
+    excluded_ids += [fr.requester_id for fr in pending_received]
+
+    potential_friends = User.query.filter(~User.id.in_(excluded_ids)).all()
+
+    return render_template(
+        "profile.html",
+        user=user,
+        friends=friends,
+        pending_requests=pending_requests,
+        potential_friends=potential_friends
+    )
+
 # ===== Run App =====
 if __name__ == "__main__":
     with app.app_context():

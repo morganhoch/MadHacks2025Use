@@ -26,5 +26,64 @@
         <a href="{{ url_for('edit_profile') }}" class="btn-primary">Edit Profile</a>
         <a href="{{ url_for('inbox') }}" class="btn-secondary">Message Me</a>
     </div>
+
+    <!-- Friends list -->
+    <div class="profile-friends">
+        <h3>Friends</h3>
+        {% if friends %}
+            <ul>
+            {% for f in friends %}
+                <li>
+                    <a href="{{ url_for('messaging.direct_message', recipient_id=f.id) }}">
+                        {{ f.username }}
+                    </a>
+                </li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>You have no friends yet.</p>
+        {% endif %}
+    </div>
+
+    <!-- Pending friend requests -->
+    <div class="profile-requests">
+        <h3>Pending Friend Requests</h3>
+        {% if pending_requests %}
+            <ul>
+            {% for fr in pending_requests %}
+                <li>
+                    {{ fr.requester.username }}
+                    <form action="{{ url_for('messaging.respond_friend', friendship_id=fr.id, action='accept') }}" method="post" style="display:inline;">
+                        <button type="submit" class="btn-primary btn-sm">Accept</button>
+                    </form>
+                    <form action="{{ url_for('messaging.respond_friend', friendship_id=fr.id, action='deny') }}" method="post" style="display:inline;">
+                        <button type="submit" class="btn-secondary btn-sm">Deny</button>
+                    </form>
+                </li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>No pending friend requests.</p>
+        {% endif %}
+    </div>
+
+    <!-- Add Friends Section -->
+    <div class="profile-add-friends">
+        <h3>Add Friends</h3>
+        {% if potential_friends %}
+            <ul>
+            {% for pf in potential_friends %}
+                <li>
+                    {{ pf.username }}
+                    <form action="{{ url_for('messaging.add_friend', user_id=pf.id) }}" method="post" style="display:inline;">
+                        <button type="submit" class="btn-primary btn-sm">Send Friend Request</button>
+                    </form>
+                </li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>No users available to add.</p>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
