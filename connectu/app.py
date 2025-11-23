@@ -46,8 +46,20 @@ auth0 = oauth.register(
 # ===== Routes =====
 @app.route("/")
 def index():
-    user = session.get("user")
-    return render_template("index.html", user=user)
+    user_session = session.get("user")
+    user_obj = None
+    user_courses = []
+
+    if user_session:
+        user_obj = User.query.filter_by(auth0_id=user_session["auth0_id"]).first()
+        if user_obj:
+            user_courses = user_obj.courses  # many-to-many relationship
+
+    return render_template(
+        "index.html",
+        user=user_obj,
+        user_courses=user_courses
+    )
 
 @app.route("/login")
 def login():
