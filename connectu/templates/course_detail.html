@@ -4,6 +4,7 @@
 
 {% block content %}
 <div class="course-container">
+    <div class="course-main-info-right">
     <h1>{{ course.course_code }} - {{ course.title }}</h1>
 
     {% if course.description %}
@@ -14,19 +15,6 @@
     <form action="{{ url_for('leave_course', course_id=course.id) }}" method="post" style="display:inline;">
         <button type="submit" class="btn btn-danger">Leave Course</button>
     </form>
-    {% endif %}
-
-    <h2>Users in this course</h2>
-    {% if enrolled_users %}
-        <ul class="course-users">
-        {% for u in enrolled_users %}
-            <li>
-                <a href="{{ url_for('profile_view', user_id=u.id) }}">{{ u.username }}</a>
-            </li>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <p>No one has joined this course yet.</p>
     {% endif %}
 
     <hr>
@@ -72,5 +60,21 @@
         {% else %}
             <p>No questions yet.</p>
         {% endif %}
+        </div>
+
+        <div class="enrolled-users-sidebar">
+            <h2>Users in this course</h2>
+            {% if enrolled_users %}
+                <ul class="course-users">
+                {% for u in enrolled_users %}
+                    <li>
+                        <a href="{{ url_for('profile_view', user_id=u.id) }}">{{ u.username }}</a>
+                    </li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p>No one has joined this course yet.</p>
+            {% endif %}
+        </div>
 </div>
 {% endblock %}
