@@ -66,5 +66,24 @@
             <p>No pending friend requests.</p>
         {% endif %}
     </div>
+
+    <!-- Add Friends Section -->
+    <div class="profile-add-friends">
+        <h3>Add Friends</h3>
+        {% if potential_friends %}
+            <ul>
+            {% for pf in potential_friends %}
+                <li>
+                    {{ pf.username }}
+                    <form action="{{ url_for('messaging.add_friend', user_id=pf.id) }}" method="post" style="display:inline;">
+                        <button type="submit" class="btn-primary btn-sm">Send Friend Request</button>
+                    </form>
+                </li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>No users available to add.</p>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
