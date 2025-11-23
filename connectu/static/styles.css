@@ -1,10 +1,10 @@
-/* ===== Base Styles ===== */
+/* ===== Base Styles ===== */ 
 body {
-    background: #f0f4ff;
-    font-family: 'Inter', Arial, sans-serif;
+    background: #fff; /* UW white background */
+    font-family: 'Bebas Neue', Arial, sans-serif; /* collegiate font */
     margin: 0;
     padding: 0;
-    color: #333;
+    color: #000; /* black text */
 }
 
 a {
@@ -14,9 +14,9 @@ a {
 
 /* ===== Navbar ===== */
 header {
-    background: #1e3a8a;
+    background: #c5050c; /* UW red */
     color: white;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
 }
 
 #navbar {
@@ -29,9 +29,11 @@ header {
 }
 
 #navbar .logo {
-    font-family: 'Fredoka One', sans-serif;
+    font-family: 'Bebas Neue', sans-serif;
     font-size: 1.8em;
-    font-weight: 700;
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 2px 2px 3px rgba(0,0,0,0.4);
 }
 
 #navbar .nav-links a {
@@ -39,31 +41,32 @@ header {
     padding: 0.5em 1em;
     border-radius: 10px;
     transition: all 0.2s ease;
+    color: #fff;
 }
 
 #navbar .nav-links a:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(0,0,0,0.15);
 }
 
 /* Buttons */
 .btn-login {
-    background: #50b9ff;
+    background: #c5050c;
     color: white;
-    font-weight: 600;
+    font-weight: 700;
 }
 
 .btn-login:hover {
-    background: #36a3f0;
+    background: #a00409;
 }
 
 .btn-logout {
-    background: #ff4d4d;
+    background: #000;
     color: white;
-    font-weight: 600;
+    font-weight: 700;
 }
 
 .btn-logout:hover {
-    background: #e63636;
+    background: #222;
 }
 
 /* ===== Main Content ===== */
@@ -79,7 +82,7 @@ header {
     margin: auto;
     background: #fff;
     border-radius: 15px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
     padding: 2em;
 }
 
@@ -99,14 +102,16 @@ header {
 }
 
 .me {
-    background: #18adee;
+    background: #c5050c;
+    color: white;
     margin-left: auto;
     display: block;
     text-align: right;
 }
 
 .them {
-    background: #f0f0fa;
+    background: #f8f8f8;
+    color: #000;
     margin-right: auto;
     display: block;
     text-align: left;
@@ -120,22 +125,22 @@ form {
 input[type="text"] {
     flex: 1;
     padding: 0.6em 1em;
-    border: 1px solid #ccc;
+    border: 1px solid #c5050c;
     border-radius: 25px;
 }
 
 button {
     padding: 0.6em 1.4em;
     border: none;
-    background: #50b9ff;
+    background: #c5050c;
     color: white;
     border-radius: 25px;
     cursor: pointer;
-    font-weight: 600;
+    font-weight: 700;
 }
 
 button:hover {
-    background: #36a3f0;
+    background: #a00409;
 }
 
 /* ===== Footer ===== */
@@ -143,7 +148,7 @@ footer {
     text-align: center;
     padding: 1.5em 0;
     margin-top: 4em;
-    color: #555;
+    color: #000;
     font-size: 0.9em;
 }
 
@@ -153,7 +158,7 @@ footer {
     background: #fff;
     padding: 2em;
     border-radius: 15px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
 }
 
 .profile-header {
@@ -168,18 +173,18 @@ footer {
     height: 100px;
     border-radius: 50%;
     object-fit: cover;
-    border: 3px solid #50b9ff;
+    border: 3px solid #c5050c;
 }
 
 .profile-info h2 {
     margin: 0;
     font-size: 1.8em;
-    font-weight: 700;
+    font-weight: 900;
 }
 
 .profile-info p {
     margin: 0.2em 0 0 0;
-    color: #555;
+    color: #222;
 }
 
 .profile-actions {
@@ -193,30 +198,30 @@ footer {
     border-radius: 4px;
 }
 .btn-primary {
-    background: #50b9ff;
+    background: #c5050c;
     color: white;
     padding: 0.6em 1.4em;
     border-radius: 25px;
-    font-weight: 600;
+    font-weight: 700;
     text-decoration: none;
 }
 
 .btn-primary:hover {
-    background: #36a3f0;
+    background: #a00409;
 }
 
 .btn-secondary {
-    background: #f0f0fa;
-    color: #1e3a8a;
+    background: #fff;
+    color: #c5050c;
     padding: 0.6em 1.4em;
     border-radius: 25px;
-    font-weight: 600;
+    font-weight: 700;
     text-decoration: none;
-    border: 1px solid #50b9ff;
+    border: 2px solid #c5050c;
 }
 
 .btn-secondary:hover {
-    background: #daf4ff;
+    background: #f9f0f0;
 }
 
 .flash-messages {
@@ -229,13 +234,13 @@ footer {
     padding: 1em;
     border-radius: 10px;
     margin-bottom: 1em;
-    font-weight: 600;
+    font-weight: 700;
 }
 
 .flash.warning {
-    background: #ffecb3;
-    color: #856404;
-    border: 1px solid #ffe08a;
+    background: #ffdada;
+    color: #a00404;
+    border: 1px solid #ffbcbc;
 }
 
 .edit-form {
@@ -245,15 +250,15 @@ footer {
 }
 
 .edit-form label {
-    font-weight: 600;
-    color: #1e3a8a;
+    font-weight: 700;
+    color: #c5050c;
 }
 
 .edit-form input[type="text"],
 .edit-form textarea {
     padding: 0.6em 1em;
     border-radius: 15px;
-    border: 1px solid #ccc;
+    border: 1px solid #c5050c;
     width: 100%;
     font-family: inherit;
 }
@@ -270,17 +275,18 @@ footer {
 }
 
 .course-box {
-    background-color: white;
+    background-color: #fff;
     border-radius: 10px;
     padding: 15px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.15);
     transition: transform 0.2s, box-shadow 0.2s;
     text-align: center;
+    border: 2px solid #c5050c;
 }
 
 .course-box:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 8px 12px rgba(0,0,0,0.2);
 }
 
 .course-box a {
@@ -296,7 +302,7 @@ footer {
 .course-box p {
     margin: 5px 0 0 0;
     font-size: 0.95em;
-    color: #555;
+    color: #222;
 }
 
 .course-container {
@@ -313,7 +319,7 @@ footer {
 .enrolled-users-sidebar {
     flex: 1 1 0;
     min-width: 250px;
-    background: #f5f8ff;
+    background: #fff5f5;
     border-radius: 8px;
     padding: 16px;
 }
@@ -322,7 +328,7 @@ footer {
     padding: 5px 0;
 }
 .course-users li a {
-    color: #007bff;
+    color: #c5050c;
     text-decoration: none;
 }
 .course-users li a:hover {
@@ -349,7 +355,6 @@ footer {
 }
 
 .avatar-options input[type="radio"]:checked + .avatar-choice {
-    border-color: #50b9ff; /* highlight selected avatar */
+    border-color: #c5050c; /* highlight selected avatar */
     transform: scale(1.05);
 }
-
