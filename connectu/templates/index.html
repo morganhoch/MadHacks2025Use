@@ -11,7 +11,7 @@
         {% for c in user_courses %}
             <div class="course-box">
                 <a href="{{ url_for('course_detail', course_code=c.course_code) }}">
-                    <h3>{{ c.course_code }}</h3>
+                    <h3>{{ c.course_code.replace('_', ' ') }}</h3>
                     <p>{{ c.title }}</p>
                 </a>
             </div>
