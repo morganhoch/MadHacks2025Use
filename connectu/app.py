@@ -125,6 +125,17 @@ def course_detail(course_code):
         enrolled_users=enrolled_users
     )
 
+@app.route("/remove_question/<int:question_id>", methods=["POST"])
+def remove_question(question_id):
+    question = Question.query.get_or_404(question_id)
+    user_obj = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
+    if question.user_id != user_obj.id:
+        flash("You can only remove your own questions.", "danger")
+        return redirect(url_for('course_detail', course_code=question.course.course_code))
+    db.session.delete(question)
+    db.session.commit()
+    flash("Your question has been removed.", "success")
+    return redirect(url_for('course_detail', course_code=question.course.course_code))
 
 @app.route("/search")
 def search():
