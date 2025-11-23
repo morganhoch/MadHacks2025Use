@@ -65,7 +65,7 @@
             {% for uc in user_courses %}
         <li>
             <a href="{{ url_for('course_detail', course_code=uc.course.course_code) }}">
-                {{ uc.course.course_code }}
+                {{ uc.course.course_code.replace('_', ' ') }}
                 – {{ uc.status }} ({{ uc.term }})
             </a>
         </li>
