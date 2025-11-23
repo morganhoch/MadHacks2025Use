@@ -18,6 +18,26 @@
         <label for="personal_links">Personal Links</label>
         <textarea name="personal_links" id="personal_links" rows="3" placeholder="Zoom, LinkedIn, etc.">{{ user.personal_links or '' }}</textarea>
 
+        <label>Choose an Avatar</label>
+        <div class="avatar-options">
+        <label>
+              <input type="radio" name="avatar_url" value="{{ url_for('static', filename='avatar1.png') }}"
+            {% if user.avatar_url == url_for('static', filename='avatar1.png') %}checked{% endif %}>
+        <img src="{{ url_for('static', filename='avatar1.png') }}" alt="Avatar 1" class="avatar-choice">
+        </label>
+
+        <label>
+        <input type="radio" name="avatar_url" value="{{ url_for('static', filename='avatar2.png') }}"
+            {% if user.avatar_url == url_for('static', filename='avatar2.png') %}checked{% endif %}>
+        <img src="{{ url_for('static', filename='avatar2.png') }}" alt="Avatar 2" class="avatar-choice">
+        </label>
+
+        <label>
+        <input type="radio" name="avatar_url" value="{{ url_for('static', filename='avatar3.png') }}"
+            {% if user.avatar_url == url_for('static', filename='avatar3.png') %}checked{% endif %}>
+        <img src="{{ url_for('static', filename='avatar3.png') }}" alt="Avatar 3" class="avatar-choice">
+        </label>
+        </div> 
 
         <button type="submit" class="btn-primary">Save Changes</button>
         <a href="{{ url_for('profile') }}" class="btn-secondary">Cancel</a>
