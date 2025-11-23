@@ -238,7 +238,6 @@ def edit_profile():
     if request.method == "POST":
       user.username = request.form.get("username", user.username)
       user.bio = request.form.get("bio", user.bio)
-      user.available_days = request.form.getlist("available_days") or []
       available_times = {}
       for day in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]:
             key = f"available_times[{day}]"
