@@ -24,8 +24,6 @@ def direct_message(recipient_id):
         ((DirectMessage.sender_id == sender.id) & (DirectMessage.recipient_id == recipient.id)) |
         ((DirectMessage.sender_id == recipient.id) & (DirectMessage.recipient_id == sender.id))
     ).order_by(DirectMessage.timestamp).all()
-
-    print("Message sent!")
     
     return render_template('messages.html', messages=messages, recipient=recipient)
 
@@ -37,8 +35,8 @@ def inbox():
     user = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
 
     # Get all user IDs this user has messaged with (as sender or recipient)
-    recipient_ids = db.session.query(DirectMessage.recipient_id).filter_by(sender_id=user.id).distinct()
-    sender_ids = db.session.query(DirectMessage.sender_id).filter_by(recipient_id=user.id).distinct()
+    recipient_ids = db.session.query(DirectMessage.recipient_id).filter_by(sender_id=user.id).distinct().all()
+    sender_ids = db.session.query(DirectMessage.sender_id).filter_by(recipient_id=user.id).distinct().all()
     contact_ids = set([x[0] for x in recipient_ids] + [x[0] for x in sender_ids if x[0]])
     contact_ids.discard(user.id)
     contacts = User.query.filter(User.id.in_(contact_ids)).all()
