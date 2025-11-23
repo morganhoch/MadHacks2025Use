@@ -21,18 +21,16 @@
     {% if user.available_times %}
       <ul>
         {% for day, times in user.available_times.items() %}
-          <li>
-            <strong>{{ day }}:</strong>
-            {% if times %}
-              <ul>
+          {% if times %}
+            <li>
+              <strong>{{ day }}:</strong>
+              <ul style="list-style-type: disc; margin-left: 20px; display: inline-block; margin: 0;">
                 {% for time in times %}
-                  <li>{{ time }}</li>
+                  <li style="display: inline; margin-right: 12px;">{{ time }}</li>
                 {% endfor %}
               </ul>
-            {% else %}
-              <em>No times selected</em>
-            {% endif %}
-          </li>
+            </li>
+          {% endif %}
         {% endfor %}
       </ul>
     {% else %}
