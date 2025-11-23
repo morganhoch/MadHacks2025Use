@@ -227,7 +227,7 @@ def profile():
 @app.route("/profile/<int:user_id>", endpoint="profile_view")
 def profile_view(user_id):
     user = User.query.get_or_404(user_id)
-    return render_template("profile.html", user=user, user_courses=[uc.course for uc in user.user_courses])
+    return render_template("profile.html", user=user, user_courses=user.user_courses)
 
 
 @app.route("/profile/edit", methods=["GET", "POST"])
