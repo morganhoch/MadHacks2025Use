@@ -105,9 +105,19 @@
 
     <!-- Upload Form -->
     <form action="{{ url_for('upload_document', course_id=course.id) }}" method="POST" enctype="multipart/form-data" style="margin-bottom: 1em;">
-        <input type="file" name="document" required>
-        <button type="submit" class="btn-primary">Upload</button>
+        <input id="upload-file" type="file" name="document" required style="display: none;">
+        <!-- Styled label as trigger button -->
+        <label for="upload-file" class="btn btn-primary" style="margin-right: 10px;">Choose File</label>
+        <!-- Upload button -->
+        <button type="submit" class="btn btn-primary btn-sm">Upload</button>
+        <!-- Show selected filename -->
+        <span id="filename" style="font-size:0.9em; margin-left:8px; color:#333;"></span>
     </form>
+    <script>
+    document.getElementById('upload-file').addEventListener('change', function() {
+        document.getElementById('filename').textContent = this.files[0]?.name || '';
+    });
+    </script>
 
     <!-- Document Gallery -->
     <div class="document-gallery" style="display: flex; flex-direction: column; gap: 10px; max-height: 500px; overflow-y: auto;">
