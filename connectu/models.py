@@ -20,7 +20,6 @@ class User(db.Model):
     username = db.Column(db.String(80))
     email = db.Column(db.String(120))
     bio = db.Column(db.Text)
-    subjects = db.Column(db.String(200))
      # Use association object
     user_courses = db.relationship('UserCourse', back_populates='user', lazy=True)
 
