@@ -217,28 +217,6 @@ def profile_view(user_id):
         user_courses=user_courses  # pass joined courses to template
     )
 
-@app.route("/join_course/<int:course_id>", methods=["POST"])
-def join_course(course_id):
-    # Make sure the user is logged in
-    if 'user' not in session:
-        flash("You must be logged in to join a course.")
-        return redirect(url_for('login'))
-
-    # Get the current user and course
-    user = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
-    course = Course.query.get_or_404(course_id)
-
-    # Check if the user has already joined
-    if course in user.courses:
-        flash(f"You have already joined {course.course_code}.")
-    else:
-        user.courses.append(course)
-        db.session.commit()
-        flash(f"You have joined {course.course_code}!")
-
-    # Redirect back to the search results or course page
-    return redirect(request.referrer or url_for('search'))
-
 # ===== Run App =====
 if __name__ == "__main__":
     with app.app_context():
