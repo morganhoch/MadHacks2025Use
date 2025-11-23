@@ -246,7 +246,6 @@ def edit_profile():
         available_times = {}
         for day in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]:
             available_times[day] = request.form.getlist(f"available_times[{day}][]") or []
-        
 
         user.available_times = available_times
         user.personal_links = request.form.get("personal_links", user.personal_links)
