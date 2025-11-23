@@ -10,7 +10,10 @@
   <header>
     <nav id="navbar">
         <!-- Logo is now clickable and acts as Home -->
-        <a href="{{ url_for('index') }}" class="logo">ConnectU</a>
+        <a href="{{ url_for('index') }}" class="logo">
+          <img src="{{ url_for('static', filename='connectlogo.png') }}" alt="ConnectU Logo" style="height: 40px;">
+      </a>
+      
 
         <div class="nav-links">
             <a href="{{ url_for('search') }}">Search</a>
