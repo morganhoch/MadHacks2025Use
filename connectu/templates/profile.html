@@ -24,7 +24,7 @@
 
     <div class="profile-actions">
         <a href="{{ url_for('edit_profile') }}" class="btn-primary">Edit Profile</a>
-        <a href="{{ url_for('messaging.direct_message') }}" class="btn-secondary">Message</a>
+        <a href="{{ url_for('messaging.direct_message', recipient_id=user.id) }}" class="btn-secondary">Message</a>
     </div>
 
     <!-- Joined Classes -->
