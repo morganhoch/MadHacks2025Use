@@ -304,7 +304,22 @@ footer {
 .course-container {
     margin-top: 20px;
     padding: 20px;
+    display: flex;
+    gap: 32px;
+    align-items: flex-start;
 }
+
+.course-main-info-right {
+    flex: 3 1 0;
+}
+.enrolled-users-sidebar {
+    flex: 1 1 0;
+    min-width: 250px;
+    background: #f5f8ff;
+    border-radius: 8px;
+    padding: 16px;
+}
+
 
 .course-users li {
     padding: 5px 0;
