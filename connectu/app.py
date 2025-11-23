@@ -28,6 +28,10 @@ app.config['SESSION_USE_SIGNER'] = True
 Session(app)
 
 # ===== Database Setup =====
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# ===== Database Setup =====
 db_path = os.path.join(basedir, 'instance', 'connectu.db')
 os.makedirs(os.path.dirname(db_path), exist_ok=True)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + db_path
