@@ -21,8 +21,8 @@ class User(db.Model):
     email = db.Column(db.String(120))
     bio = db.Column(db.Text)
     subjects = db.Column(db.String(200))
-    # relationship via UserCourse
-    courses = db.relationship('UserCourse', backref='user', lazy=True)
+     # Use association object
+    user_courses = db.relationship('UserCourse', back_populates='user', lazy=True)
 
 
 class DirectMessage(db.Model):
@@ -37,8 +37,8 @@ class Course(db.Model):
     course_code = db.Column(db.String(200), unique=True, nullable=False)
     title = db.Column(db.String(200))
     description = db.Column(db.Text)
-    madgrades_uuid = db.Column(db.String(200))
-    students = db.relationship('UserCourse', backref='course', lazy=True)
+    students = db.relationship('UserCourse', back_populates='course', lazy=True)
+
 
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -68,5 +68,7 @@ class UserCourse(db.Model):
     status = db.Column(db.String(20), nullable=False)
     term = db.Column(db.String(20), nullable=False)
 
-    user = db.relationship("User", backref="user_courses")
-    course = db.relationship("Course", backref="user_courses")
+    # Define back_populates instead of backref
+    user = db.relationship('User', back_populates='user_courses')
+    course = db.relationship('Course', back_populates='students')
+
