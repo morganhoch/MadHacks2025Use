@@ -14,14 +14,10 @@
             <p>{{ course.description }}</p>
         {% endif %}
 
-        {# Check if current user is enrolled #}
         {% if user %}
-            {% set enrolled = false %}
-            {% for uc in course.students %}
-                {% if uc.user_id == user.id %}
-                    {% set enrolled = true %}
-                {% endif %}
-            {% endfor %}
+            {% set enrolled = course.students | selectattr("user_id", "equalto", user.id) | list | length > 0 %}
+
+        <div style="margin-top: 16px;">
 
             {% if enrolled %}
                 <!-- Leave Course -->
