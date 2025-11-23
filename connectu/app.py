@@ -151,6 +151,11 @@ def course_detail(course_code):
 
 @app.route("/remove_question/<int:question_id>", methods=["POST"])
 def remove_question(question_id):
+    # Make sure user is logged in
+    if "user" not in session:
+        flash("You must be logged in to remove a question.", "danger")
+        return redirect(request.referrer or "/")
+
     question = Question.query.get_or_404(question_id)
     user_obj = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
     if question.user_id != user_obj.id:
