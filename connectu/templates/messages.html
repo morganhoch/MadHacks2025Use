@@ -5,19 +5,21 @@
 {% block content %}
 <div id="messages">
     <h2>Messages with {{ recipient.username or recipient.email }}</h2>
-    <ul>
-    {% for msg in messages %}
-        <li>
-        <strong>
-            {% if msg.sender_id == recipient.id %}
-            {{ recipient.username or recipient.email }}:
-            {% else %}
-            You:
-            {% endif %}
-        </strong> {{ msg.content }} <em>{{ msg.timestamp.strftime('%Y-%m-%d %H:%M') }}</em>
-        </li>
-    {% endfor %}
-    </ul>
+    <ul class="chat-list">
+        {% for msg in messages %}
+            <li class="{% if msg.sender_id == recipient.id %}chat-left{% else %}chat-right{% endif %}">
+                <strong>
+                    {% if msg.sender_id == recipient.id %}
+                        {{ recipient.username or recipient.email }}:
+                    {% else %}
+                        You:
+                    {% endif %}
+                </strong>
+                {{ msg.content }}
+                <em>{{ msg.timestamp.strftime('%Y-%m-%d %H:%M') }}</em>
+            </li>
+        {% endfor %}
+        </ul>        
     <form method="post">
         <input type="text" name="content" placeholder="Type a message" required>
         <button type="submit">Send</button>
