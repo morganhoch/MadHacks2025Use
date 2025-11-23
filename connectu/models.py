@@ -22,8 +22,12 @@ class User(db.Model):
     bio = db.Column(db.Text)
     subjects = db.Column(db.String(200))
     
-    # Relationship to courses
-    courses = db.relationship('Course', secondary=user_courses, backref='students')
+    # relationship to association object
+    user_courses = db.relationship('UserCourse', back_populates='user', cascade='all, delete-orphan')
+    # convenience property to get courses only
+    @property
+    def courses(self):
+        return [uc.course for uc in self.user_courses]
 
 class DirectMessage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -39,6 +43,10 @@ class Course(db.Model):
     description = db.Column(db.Text)
     madgrades_uuid = db.Column(db.String(200))  # store the UUID for Madgrades API
 
+    user_courses = db.relationship('UserCourse', back_populates='course', cascade='all, delete-orphan')
+    @property
+    def students(self):
+        return [uc.user for uc in self.user_courses]
 
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -60,3 +68,14 @@ class Answer(db.Model):
 
     question = db.relationship('Question', backref='answers', lazy=True)
     user = db.relationship('User', backref='answers', lazy=True)
+
+class UserCourse(db.Model):
+    __tablename__ = 'user_courses'
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    course_id = db.Column(db.Integer, db.ForeignKey('course.id'), primary_key=True)
+    status = db.Column(db.String(20), nullable=False, default="student")  # "student" or "tutor"
+    term = db.Column(db.String(20), nullable=True)  # e.g., "Fall'25"
+
+    # Relationships
+    user = db.relationship('User', back_populates='user_courses')
+    course = db.relationship('Course', back_populates='user_courses')
