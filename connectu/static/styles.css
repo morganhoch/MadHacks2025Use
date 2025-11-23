@@ -206,7 +206,7 @@ footer {
 }
 
 .btn-primary {
-    display: block;
+    display: inline-block;
     background: #ba0c2f;
     color: white;
     padding: 0.25em 0.75em;
@@ -490,14 +490,6 @@ footer {
     display: block;
     margin-top: 2px;
     opacity: 0.7;
-}
-
-.chat-list .msg-time {
-    font-size: 0.7em;
-    display: block;
-    margin-top: 3px;
-    opacity: 0.6;    /* Slightly lighter, optional */
-    line-height: 1.1;
 }
 
 
