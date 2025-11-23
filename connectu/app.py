@@ -4,16 +4,14 @@ from authlib.integrations.flask_client import OAuth
 from flask_session import Session
 from dotenv import load_dotenv
 import os, secrets
-from models import db, User, DirectMessage, Course  # if you're using models.py
-from messaging_routes import messaging_bp
-from flask import session, redirect, url_for, flash
-from models import db, User, Course
+from models import db, User, DirectMessage, Course  # your models
+from messaging_routes import messaging_bp  # optional if messaging is still used
 from populate_courses import populate_courses
 
-
-# Load env variables
+# ===== Load environment variables =====
 load_dotenv()
 
+# ===== Flask App Setup =====
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "supersecretkey123")
 
@@ -28,11 +26,11 @@ Session(app)
 # ===== Database Setup =====
 db_path = os.path.join(basedir, 'instance', 'connectu.db')
 os.makedirs(os.path.dirname(db_path), exist_ok=True)
-
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + db_path
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db.init_app(app)
 
-db.init_app(app)  # IMPORTANT
+# Register messaging blueprint if you still want messages
 app.register_blueprint(messaging_bp)
 
 # ===== OAuth / Auth0 Setup =====
@@ -57,21 +55,9 @@ def login():
     redirect_uri = os.getenv("AUTH0_CALLBACK_URL")
     return auth0.authorize_redirect(redirect_uri=redirect_uri, nonce=session["nonce"])
 
-@app.route("/inbox")
-def inbox():
-    return render_template("inbox.html")
-
-@app.route("/courses/<course_code>")
-def course_detail(course_code):
-    # Look up the course by code
-    course = Course.query.filter_by(course_code=course_code).first_or_404()
-    return render_template("course_detail.html", course=course)
-
 @app.route("/callback")
 def callback():
     token = auth0.authorize_access_token()
-
-    # Validate token with stored nonce
     userinfo = auth0.parse_id_token(token, nonce=session.get("nonce"))
 
     # Store user in session
@@ -81,7 +67,7 @@ def callback():
         "email": userinfo["email"]
     }
 
-    # Add to DB if they don't exist
+    # Add to DB if user doesn't exist
     existing = User.query.filter_by(auth0_id=userinfo["sub"]).first()
     if not existing:
         new_user = User(
@@ -96,6 +82,37 @@ def callback():
 
     return redirect(url_for("index"))
 
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(
+        f"https://{os.getenv('AUTH0_DOMAIN')}/v2/logout?"
+        f"returnTo={url_for('index', _external=True)}&"
+        f"client_id={os.getenv('AUTH0_CLIENT_ID')}"
+    )
+
+@app.route("/inbox")
+def inbox():
+    return render_template("inbox.html")
+
+@app.route("/courses/<course_code>")
+def course_detail(course_code):
+    course = Course.query.filter_by(course_code=course_code).first_or_404()
+    return render_template("course_detail.html", course=course)
+
+@app.route("/search")
+def search():
+    query = request.args.get("q", "").strip()
+    cleaned = query.replace("|", "").strip().upper()
+    results = Course.query.filter(Course.course_code.like(f"%{cleaned}%")).all()
+
+    # Logged-in user (if any)
+    user_obj = None
+    if 'user' in session:
+        user_obj = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
+
+    return render_template("search.html", query=query, results=results, user=user_obj)
+
 @app.route("/profile")
 def profile():
     user_session = session.get("user")
@@ -103,13 +120,40 @@ def profile():
         flash("Please sign in to view your profile.", "warning")
         return redirect(url_for("login"))
 
-    # Fetch latest info from database
     user = User.query.filter_by(auth0_id=user_session["auth0_id"]).first()
     if not user:
         flash("User not found.", "warning")
         return redirect(url_for("index"))
 
-    return render_template("profile.html", user=user)
+    return render_template("profile.html", user=user, user_courses=user.courses)
+
+@app.route("/profile/<int:user_id>", endpoint="profile_view")
+def profile_view(user_id):
+    user = User.query.get_or_404(user_id)
+    return render_template("profile.html", user=user, user_courses=user.courses)
+
+@app.route("/profile/edit", methods=["GET", "POST"])
+def edit_profile():
+    user_session = session.get("user")
+    if not user_session:
+        flash("Please sign in to edit your profile.", "warning")
+        return redirect(url_for("login"))
+
+    user = User.query.filter_by(auth0_id=user_session["auth0_id"]).first()
+    if not user:
+        flash("User not found.", "warning")
+        return redirect(url_for("index"))
+
+    if request.method == "POST":
+        user.username = request.form.get("username", user.username)
+        user.bio = request.form.get("bio", user.bio)
+        user.subjects = request.form.get("subjects", user.subjects)
+        db.session.commit()
+        session["user"]["name"] = user.username
+        flash("Profile updated successfully!", "success")
+        return redirect(url_for("profile"))
+
+    return render_template("edit_profile.html", user=user)
 
 @app.route("/join_course/<int:course_id>", methods=['POST'])
 def join_course(course_id):
@@ -127,108 +171,11 @@ def join_course(course_id):
         db.session.commit()
         flash(f"You have joined {course.course_code}!")
 
-    return redirect(url_for('course_detail', course_code=course.course_code))
-
-
-@app.route("/profile/edit", methods=["GET", "POST"])
-def edit_profile():
-    # Make sure user is logged in
-    user_session = session.get("user")
-    if not user_session:
-        flash("Please sign in to edit your profile.", "warning")
-        return redirect(url_for("login"))
-
-    # Fetch user from DB
-    user = User.query.filter_by(auth0_id=user_session["auth0_id"]).first()
-    if not user:
-        flash("User not found.", "warning")
-        return redirect(url_for("index"))
-
-    if request.method == "POST":
-        # Update user info
-        user.username = request.form.get("username", user.username)
-        user.bio = request.form.get("bio", user.bio)
-        user.subjects = request.form.get("subjects", user.subjects)
-        
-        db.session.commit()  # Save changes
-
-        # Update session info
-        session["user"]["name"] = user.username
-        flash("Profile updated successfully!", "success")
-        return redirect(url_for("profile"))
-
-    # Render form for GET request
-    return render_template("edit_profile.html", user=user)
-
-@app.route("/search")
-def search():
-    query = request.args.get("q", "").strip()
-    cleaned = query.replace("|", "").strip().upper()
-
-    results = Course.query.filter(Course.course_code.like(f"%{cleaned}%")).all()
-
-    # Get the logged-in user from session (if any)
-    user_obj = None
-    if 'user' in session:
-        user_obj = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
-
-    return render_template(
-        "search.html",
-        query=query,
-        results=results,
-        user=user_obj  # pass user to template
-    )
-
-
-@app.route("/logout")
-def logout():
-    session.clear()
-    return redirect(
-        f"https://{os.getenv('AUTH0_DOMAIN')}/v2/logout?"
-        f"returnTo={url_for('index', _external=True)}&"
-        f"client_id={os.getenv('AUTH0_CLIENT_ID')}"
-    )
-
-@app.route("/profile/<int:user_id>", endpoint="profile_view")
-def profile_view(user_id):
-    user = User.query.get_or_404(user_id)
-
-    # Friends: either requester or requested with status 'accepted'
-    friends = User.query.join(Friendship, ((Friendship.requester_id == User.id) | (Friendship.requested_id == User.id))).filter(
-        ((Friendship.requester_id == user.id) | (Friendship.requested_id == user.id)) &
-        (Friendship.status == 'accepted') &
-        (User.id != user.id)
-    ).all()
-
-    # Pending requests where current user is requested
-    pending_requests = Friendship.query.filter_by(requested_id=user.id, status='pending').all()
-
-    # Potential friends: all users except current user, current friends, and users with pending requests (sent or received)
-    excluded_ids = [user.id]  # start with current user
-    excluded_ids += [f.id for f in friends]
-    pending_sent = Friendship.query.filter_by(requester_id=user.id, status='pending').all()
-    pending_received = Friendship.query.filter_by(requested_id=user.id, status='pending').all()
-    excluded_ids += [fr.requested_id for fr in pending_sent]
-    excluded_ids += [fr.requester_id for fr in pending_received]
-
-    potential_friends = User.query.filter(~User.id.in_(excluded_ids)).all()
-
-    # Step 4: Get the courses the user has joined
-    user_courses = user.courses  # many-to-many relationship
-
-    return render_template(
-        "profile.html",
-        user=user,
-        friends=friends,
-        pending_requests=pending_requests,
-        potential_friends=potential_friends,
-        user_courses=user_courses  # pass joined courses to template
-    )
+    return redirect(request.referrer or url_for('search'))
 
 # ===== Run App =====
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-        populate_courses()
+        populate_courses()  # optional
     app.run(debug=True)
-
