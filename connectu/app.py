@@ -302,19 +302,19 @@ def upload_document(course_id):
         flash('No file selected', 'warning')
         return redirect(request.referrer)
 
-   if allowed_file(file.filename):
-    filename = secure_filename(file.filename)
+    if allowed_file(file.filename):
+        filename = secure_filename(file.filename)
 
-    # Make sure folder exists
-    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+        # Make sure folder exists
+        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    file.save(filepath)
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(filepath)
 
-    user_obj = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
-    new_doc = Document(filename=filename, filepath=filepath, course_id=course_id, user_id=user_obj.id)
-    db.session.add(new_doc)
-    db.session.commit()
+        user_obj = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
+        new_doc = Document(filename=filename, filepath=filepath, course_id=course_id, user_id=user_obj.id)
+        db.session.add(new_doc)
+        db.session.commit()
 
         flash('Document uploaded successfully!', 'success')
 
