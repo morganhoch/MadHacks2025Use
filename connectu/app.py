@@ -205,12 +205,16 @@ def profile_view(user_id):
 
     potential_friends = User.query.filter(~User.id.in_(excluded_ids)).all()
 
+    # Step 4: Get the courses the user has joined
+    user_courses = user.courses  # many-to-many relationship
+
     return render_template(
         "profile.html",
         user=user,
         friends=friends,
         pending_requests=pending_requests,
-        potential_friends=potential_friends
+        potential_friends=potential_friends,
+        user_courses=user_courses  # pass joined courses to template
     )
 
 # ===== Run App =====
