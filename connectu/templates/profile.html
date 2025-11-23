@@ -24,9 +24,13 @@
           <li>
             <strong>{{ day }}:</strong>
             {% if times %}
-              {{ times | join(', ') }}
+              <ul style="list-style-type: disc; margin-left: 20px; display: inline-block;">
+                {% for time in times %}
+                  <li>{{ time }}</li>
+                {% endfor %}
+              </ul>
             {% else %}
-              No times selected
+              <em>No times selected</em>
             {% endif %}
           </li>
         {% endfor %}

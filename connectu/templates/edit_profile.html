@@ -14,40 +14,26 @@
 
         <label>Availability</label>
         <div class="availability-section">
-          <h4>Which days are you typically available?</h4>
-          <div class="days-list">
-            {% for day in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"] %}
-              <label class="day-block">
-                <input type="checkbox" name="available_days" value="{{ day }}"
-                    {% if day in (user.available_days or []) %}checked{% endif %}>
-                {{ day }}
-              </label>
-            {% endfor %}
-          </div>
-        
           <h4>Choose times for each day</h4>
           {% for day in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"] %}
-            <div class="day-time-block">
-              <h5>{{ day }}</h5>
-              <div class="time-blocks">
-                {% for period, hours in [
-                    ('Morning', '6AM–12PM'),
-                    ('Afternoon', '12PM–6PM'),
-                    ('Evening', '6PM–12AM'),
-                    ('Midnight', '12AM–6AM')
-                  ] %}
-                  <label class="time-block">
-                    <input type="checkbox" name="available_times[{{ day }}][]" value="{{ period }}"
-                       {% if user.available_times and user.available_times.get(day) and (period in user.available_times.get(day)) %}checked{% endif %}>
-                    {{ period }} <span class="timing">{{ hours }}</span>
-                  </label>
-                {% endfor %}
-              </div>
+            <div class="day-time-block" style="margin-bottom: 8px;">
+              <strong>{{ day }}:</strong>
+              {% for period, hours in [
+                  ('Morning', '6AM–12PM'),
+                  ('Afternoon', '12PM–6PM'),
+                  ('Evening', '6PM–12AM'),
+                  ('Midnight', '12AM–6AM')
+                ] %}
+                <label style="margin-right: 12px;">
+                  <input type="checkbox" name="available_times[{{ day }}][]" value="{{ period }}"
+                     {% if user.available_times and user.available_times.get(day) and (period in user.available_times.get(day)) %}checked{% endif %}>
+                  {{ period }}
+                </label>
+              {% endfor %}
             </div>
           {% endfor %}
         </div>
         
-
         <label for="personal_links">Personal Links</label>
         <textarea name="personal_links" id="personal_links" rows="3" placeholder="Zoom, LinkedIn, etc.">{{ user.personal_links or '' }}</textarea>
 
