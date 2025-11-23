@@ -21,13 +21,9 @@ class User(db.Model):
     email = db.Column(db.String(120))
     bio = db.Column(db.Text)
     subjects = db.Column(db.String(200))
-    
-    # relationship to association object
-    user_courses = db.relationship('UserCourse', back_populates='user', cascade='all, delete-orphan')
-    # convenience property to get courses only
-    @property
-    def courses(self):
-        return [uc.course for uc in self.user_courses]
+     # Use association object
+    user_courses = db.relationship('UserCourse', back_populates='user', lazy=True)
+
 
 class DirectMessage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -41,12 +37,8 @@ class Course(db.Model):
     course_code = db.Column(db.String(200), unique=True, nullable=False)
     title = db.Column(db.String(200))
     description = db.Column(db.Text)
-    madgrades_uuid = db.Column(db.String(200))  # store the UUID for Madgrades API
+    students = db.relationship('UserCourse', back_populates='course', lazy=True)
 
-    user_courses = db.relationship('UserCourse', back_populates='course', cascade='all, delete-orphan')
-    @property
-    def students(self):
-        return [uc.user for uc in self.user_courses]
 
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -73,9 +65,10 @@ class UserCourse(db.Model):
     __tablename__ = 'user_courses'
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'), primary_key=True)
-    status = db.Column(db.String(20), nullable=False, default="student")  # "student" or "tutor"
-    term = db.Column(db.String(20), nullable=True)  # e.g., "Fall'25"
+    status = db.Column(db.String(20), nullable=False)
+    term = db.Column(db.String(20), nullable=False)
 
-    # Relationships
+    # Define back_populates instead of backref
     user = db.relationship('User', back_populates='user_courses')
-    course = db.relationship('Course', back_populates='user_courses')
+    course = db.relationship('Course', back_populates='students')
+
