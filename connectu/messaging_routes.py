@@ -41,16 +41,4 @@ def inbox():
     contact_ids.discard(user.id)
     contacts = User.query.filter(User.id.in_(contact_ids)).all()
 
-    contact_rows = []
-    for c in contacts:
-        is_sender = db.session.query(DirectMessage.id).filter_by(sender_id=user.id, recipient_id=c.id).first() is not None
-        is_recipient = db.session.query(DirectMessage.id).filter_by(sender_id=c.id, recipient_id=user.id).first() is not None
-        contact_rows.append({
-            "user": c,
-            "is_sender": is_sender,
-            "is_recipient": is_recipient,
-            "sender_id": c.id,      # when they are sender
-            "recipient_id": c.id,   # when they are recipient
-        })
-
-    return render_template("inbox.html", contacts=contact_rows, current_user_id=user.id)
+    return render_template("inbox.html", contacts=contacts, current_user_id=user.id)
