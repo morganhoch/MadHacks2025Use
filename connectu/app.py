@@ -161,7 +161,7 @@ def logout():
         f"client_id={os.getenv('AUTH0_CLIENT_ID')}"
     )
 
-@app.route("/profile/<int:user_id>")
+@app.route("/profile/<int:user_id>", endpoint="profile_view")
 def profile(user_id):
     user = User.query.get_or_404(user_id)
 
