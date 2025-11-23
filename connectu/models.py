@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
+
 db = SQLAlchemy()
 
 # Database model
@@ -27,3 +28,14 @@ class Course(db.Model):
     course_code = db.Column(db.String(20), unique=True, nullable=False)
     title = db.Column(db.String(200))
     description = db.Column(db.Text)
+
+class Friendship(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    requester_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    requested_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    status = db.Column(db.String(10), default='pending')  # 'pending', 'accepted', 'denied'
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Optional: relationships for easier querying
+    requester = db.relationship('User', foreign_keys=[requester_id])
+    requested = db.relationship('User', foreign_keys=[requested_id])
