@@ -73,7 +73,7 @@ class UserCourse(db.Model):
     course = db.relationship('Course', back_populates='students')
 
 class Document(db.Model):
-   id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String(200))
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
