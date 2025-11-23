@@ -8,21 +8,24 @@
 </head>
 <body>
     <header>
-        <nav id="navbar">
-            <div class="logo">ConnectU</div>
-            <div class="nav-links">
-                <a href="{{ url_for('index') }}">Home</a>
-                <a href="{{ url_for('search') }}">Search</a>
-                <a href="{{ url_for('messaging.inbox') }}">Inbox</a>
-                {% if session.get('user') %}
-                    <a href="{{ url_for('profile') }}">Profile</a>
-                    <a href="{{ url_for('logout') }}" class="btn-logout">Logout</a>
-                {% else %}
-                    <a href="{{ url_for('login') }}" class="btn-login">Login</a>
-                {% endif %}
-            </div>
-        </nav>
-    </header>
+    <nav id="navbar">
+        <!-- Make the logo a clickable home link -->
+        <a href="{{ url_for('index') }}" class="logo">ConnectU</a>
+
+        <div class="nav-links">
+            <!-- Remove separate Home link -->
+            <!-- <a href="{{ url_for('index') }}">Home</a> -->
+            <a href="{{ url_for('search') }}">Search</a>
+            <a href="{{ url_for('messaging.inbox') }}">Inbox</a>
+            {% if session.get('user') %}
+                <a href="{{ url_for('profile') }}">Profile</a>
+                <a href="{{ url_for('logout') }}" class="btn-logout">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="btn-login">Login</a>
+            {% endif %}
+        </div>
+    </nav>
+</header>
 
     <!-- Flash messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
