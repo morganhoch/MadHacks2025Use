@@ -228,15 +228,15 @@ def edit_profile():
         return redirect(url_for("index"))
 
   if request.method == "POST":
-    user.username = request.form.get("username", user.username)
-    user.bio = request.form.get("bio", user.bio)
-    user.availability = request.form.get("availability", user.availability)
-    user.personal_links = request.form.get("personal_links", user.personal_links)
-    user.avatar_url = request.form.get("avatar_url", user.avatar_url)  # <-- new line
-    db.session.commit()
-    session["user"]["name"] = user.username
-    flash("Profile updated successfully!", "success")
-    return redirect(url_for("profile"))
+      user.username = request.form.get("username", user.username)
+      user.bio = request.form.get("bio", user.bio)
+      user.availability = request.form.get("availability", user.availability)
+      user.personal_links = request.form.get("personal_links", user.personal_links)
+      user.avatar_url = request.form.get("avatar_url", user.avatar_url)  # <-- new line
+      db.session.commit()
+      session["user"]["name"] = user.username
+      flash("Profile updated successfully!", "success")
+      return redirect(url_for("profile"))
 
     # For GET request, render the form
     return render_template("edit_profile.html", user=user)
