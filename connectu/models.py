@@ -8,10 +8,10 @@ db = SQLAlchemy()
 #http://localhost:5000/callback
 #http://localhost:5000
 # Association table for users joining courses -> Many to Many relationship
-user_courses = db.Table('user_courses',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
-    db.Column('course_id', db.Integer, db.ForeignKey('course.id'), primary_key=True)
-)
+#user_courses = db.Table('user_courses',
+#    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+#    db.Column('course_id', db.Integer, db.ForeignKey('course.id'), primary_key=True)
+#)
 
 # Database model
 class User(db.Model):
