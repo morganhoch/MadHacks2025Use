@@ -41,29 +41,36 @@
     {% endif %}
 
     <h2>Questions & Answers</h2>
-    {% if questions %}
-        {% for q in questions %}
-            <div class="question-block">
-                <p><strong>{{ q.user.username }}</strong> asked:</p>
-                <p>{{ q.content }}</p>
+        {% if questions %}
+            {% for q in questions %}
+                <div class="question-block">
+                    <p><strong>{{ q.user.username }}</strong> asked:</p>
+                    <p>{{ q.content }}</p>
 
-                <ul>
-                {% for a in q.answers %}
-                    <li><strong>{{ a.user.username }}</strong> answered: {{ a.content }}</li>
-                {% endfor %}
-                </ul>
+                    <ul>
+                    {% for a in q.answers %}
+                        <li><strong>{{ a.user.username }}</strong> answered: {{ a.content }}</li>
+                    {% endfor %}
+                    </ul>
 
-                {% if session.user %}
-                    <form method="POST">
-                        <textarea name="content" placeholder="Type your answer here..." required></textarea>
-                        <input type="hidden" name="question_id" value="{{ q.id }}">
-                        <button type="submit" name="answer">Post Answer</button>
-                    </form>
-                {% endif %}
-            </div>
-        {% endfor %}
-    {% else %}
-        <p>No questions yet. Be the first to ask!</p>
-    {% endif %}
+                    {# Add remove button if the current user posted the question #}
+                    {% if session.user and session.user['auth0_id'] == q.user.auth0_id %}
+                        <form action="{{ url_for('remove_question', question_id=q.id) }}" method="post" style="display:inline;">
+                            <button type="submit" class="btn-danger btn-sm">Remove Question</button>
+                        </form>
+                    {% endif %}
+
+                    {% if session.user %}
+                        <form method="POST">
+                            <textarea name="content" placeholder="Type your answer here..." required></textarea>
+                            <input type="hidden" name="question_id" value="{{ q.id }}">
+                            <button type="submit" name="answer">Post Answer</button>
+                        </form>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No questions yet.</p>
+        {% endif %}
 </div>
 {% endblock %}
