@@ -68,7 +68,5 @@ class UserCourse(db.Model):
     status = db.Column(db.String(20), nullable=False)
     term = db.Column(db.String(20), nullable=False)
 
-    # Define back_populates instead of backref
     user = db.relationship('User', back_populates='user_courses')
     course = db.relationship('Course', back_populates='students')
-

@@ -52,7 +52,7 @@ def index():
     if user_session:
         user_obj = User.query.filter_by(auth0_id=user_session["auth0_id"]).first()
         if user_obj:
-            user_courses = user_obj.courses
+            user_courses = [uc.course for uc in user_obj.user_courses]
     return render_template("index.html", user=user_obj, user_courses=user_courses)
 
 
@@ -153,8 +153,12 @@ def search():
 @app.route("/leave_course/<int:course_id>", methods=['POST'])
 def leave_course(course_id):
     if 'user' not in session:
-        flash("You must be logged in to leave a course.")
+        flash("You must be logged in to leave a course.", "warning")
         return redirect(url_for('login'))
+
+    user = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
+    course = Course.query.get_or_404(course_id)
+
     uc = UserCourse.query.filter_by(user_id=user.id, course_id=course.id).first()
     if uc:
         db.session.delete(uc)
@@ -162,6 +166,7 @@ def leave_course(course_id):
         flash(f"You have left {course.course_code}.", "info")
     else:
         flash("You are not enrolled in this course.", "warning")
+
     return redirect(url_for('course_detail', course_code=course.course_code))
 
 
@@ -213,14 +218,14 @@ def edit_profile():
 @app.route("/join_course/<int:course_id>", methods=['POST'])
 def join_course(course_id):
     if 'user' not in session:
-        flash("You must be logged in to join a course.")
+        flash("You must be logged in to join a course.", "warning")
         return redirect(url_for('login'))
 
+    # Get user and course
     user = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
     course = Course.query.get_or_404(course_id)
 
-    # Get status and term from form
-    # Get status and term from form
+    # Get status and term from the form
     status = request.form.get('status')
     term = request.form.get('term')
 
@@ -228,18 +233,20 @@ def join_course(course_id):
         flash("Please select both status and term.", "warning")
         return redirect(request.referrer or url_for('course_detail', course_code=course.course_code))
 
-    # Check if already joined
+    # Check if user is already enrolled
     existing = UserCourse.query.filter_by(user_id=user.id, course_id=course.id).first()
     if existing:
         flash("You have already joined this course.", "info")
     else:
-        # Create new association object
+        # Add the association object
         uc = UserCourse(user_id=user.id, course_id=course.id, status=status, term=term)
         db.session.add(uc)
         db.session.commit()
         flash(f"You joined {course.course_code} as a {status} for {term}!", "success")
 
     return redirect(request.referrer or url_for('course_detail', course_code=course.course_code))
+
+
 
 
 # ===== Run App =====
