@@ -109,8 +109,17 @@ def inbox():
 
 @app.route("/courses/<course_code>")
 def course_detail(course_code):
+    # Look up the course by code
     course = Course.query.filter_by(course_code=course_code).first_or_404()
-    return render_template("course_detail.html", course=course)
+
+    # Get all users who joined this course
+    enrolled_users = course.users  # assuming a many-to-many relationship: Course.users
+
+    return render_template(
+        "course_detail.html",
+        course=course,
+        enrolled_users=enrolled_users
+    )
 
 @app.route("/search")
 def search():
@@ -185,19 +194,6 @@ def join_course(course_id):
 
     return redirect(request.referrer or url_for('search'))
 
-@app.route("/courses/<course_code>")
-def course_detail(course_code):
-    # Look up the course by code
-    course = Course.query.filter_by(course_code=course_code).first_or_404()
-
-    # Get all users who joined this course
-    enrolled_users = course.users  # assuming a many-to-many relationship: Course.users
-
-    return render_template(
-        "course_detail.html",
-        course=course,
-        enrolled_users=enrolled_users
-    )
 
 
 # ===== Run App =====
