@@ -27,7 +27,9 @@ Session(app)
 
 # ===== Database Setup =====
 # Use Railway Postgres
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")  # Railway DATABASE_URL
+db_path = os.path.join(basedir, 'instance', 'connectu.db')
+os.makedirs(os.path.dirname(db_path), exist_ok=True)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + db_path
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
@@ -197,7 +199,6 @@ def join_course(course_id):
         flash(f"You have joined {course.course_code}!")
 
     return redirect(request.referrer or url_for('search'))
-
 
 # ===== Run App =====
 if __name__ == "__main__":
