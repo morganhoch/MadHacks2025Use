@@ -29,17 +29,16 @@ header {
 }
 
 #navbar .logo {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 2em;
-    font-weight: 900;
-    letter-spacing: 1px;
+    font-family: 'Fredoka One', sans-serif; /* or UW font */
+    font-size: 1.8em;
+    font-weight: 700;
     color: white;
+    text-decoration: none; /* removes underline from <a> */
 }
 
 #navbar .logo:hover {
-    opacity: 0.85; /* subtle hover effect */
+    opacity: 0.85;
 }
-
 #navbar .nav-links a {
     margin-left: 1.5em;
     padding: 0.5em 1em;
