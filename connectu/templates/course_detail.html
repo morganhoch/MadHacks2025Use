@@ -1,10 +1,26 @@
 {% extends "base.html" %}
 
-{% block title %}{{ course.course_code }}{% endblock %}
+{% block title %}{{ course.course_code }} - ConnectU{% endblock %}
 
 {% block content %}
-<h1>{{ course.course_code }} - {{ course.title }}</h1>
-<p>Instructor: {{ course.instructor }}</p>
-<p>Schedule: {{ course.schedule }}</p>
-<a href="{{ url_for('search') }}">Back to Search</a>
+<div class="course-container">
+    <h1>{{ course.course_code }} - {{ course.title }}</h1>
+
+    {% if course.description %}
+        <p>{{ course.description }}</p>
+    {% endif %}
+
+    <h2>Users in this course</h2>
+    {% if enrolled_users %}
+        <ul class="course-users">
+        {% for u in enrolled_users %}
+            <li>
+                <a href="{{ url_for('profile_view', user_id=u.id) }}">{{ u.username }}</a>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No one has joined this course yet.</p>
+    {% endif %}
+</div>
 {% endblock %}
