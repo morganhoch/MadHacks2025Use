@@ -6,7 +6,7 @@
     <ul>
     {% for contact in contacts %}
         <li>
-        <a href="{{ url_for('messaging.direct_message', recipient_id=contact.user.id) }}">
+        <a href="{{ url_for('messaging.direct_message', recipient_id=contact.id) }}">
             {{ contact.username or contact.email }}
         </a>
         </li>
