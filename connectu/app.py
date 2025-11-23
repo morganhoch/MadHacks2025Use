@@ -127,7 +127,7 @@ def course_detail(course_code):
         return redirect(url_for("course_detail", course_code=course_code))
 
     questions = Question.query.filter_by(course_id=course.id).order_by(Question.timestamp.desc()).all()
-    return render_template("course_detail.html", course=course, questions=questions)
+    return render_template("course_detail.html", course=course, questions=questions, user=user_obj)
 
 @app.route("/search")
 def search():
@@ -138,6 +138,22 @@ def search():
     if 'user' in session:
         user_obj = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
     return render_template("search.html", query=query, results=results, user=user_obj)
+
+@app.route("/leave_course/<int:course_id>", methods=['POST'])
+def leave_course(course_id):
+    if 'user' not in session:
+        flash("You must be logged in to leave a course.")
+        return redirect(url_for('login'))
+    user = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
+    course = Course.query.get_or_404(course_id)
+    if course in user.courses:
+        user.courses.remove(course)
+        db.session.commit()
+        flash(f"You have left {course.course_code}.", "info")
+    else:
+        flash("You are not enrolled in this course.", "warning")
+    return redirect(url_for('course_detail', course_code=course.course_code))
+
 
 @app.route("/profile")
 def profile():
