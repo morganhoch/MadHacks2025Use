@@ -4,10 +4,10 @@
 <h2>Your Conversations</h2>
     {% if contacts %}
     <ul>
-    {% for row in contacts %}
+    {% for contact in contacts %}
         <li>
-        <a href="{{ url_for('messaging.direct_message', recipient_id=row.user.id) }}">
-            {{ row.user.username or row.user.email }}
+        <a href="{{ url_for('messaging.direct_message', recipient_id=contact.user.id) }}">
+            {{ contact.username or contact.email }}
         </a>
         </li>
     {% endfor %}
