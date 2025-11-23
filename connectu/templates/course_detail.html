@@ -10,18 +10,46 @@
         <p>{{ course.description }}</p>
     {% endif %}
 
-    {% if user in course.students %}
-    <form action="{{ url_for('leave_course', course_id=course.id) }}" method="post" style="display:inline;">
-        <button type="submit" class="btn btn-danger">Leave Course</button>
-    </form>
+    <!-- Join / Leave Course -->
+    {% set joined = None %}
+    {% if user %}
+        {% for uc in user.user_courses %}
+            {% if uc.course.id == course.id %}
+                {% set joined = uc %}
+            {% endif %}
+        {% endfor %}
     {% endif %}
 
+    {% if joined %}
+        <p>You are enrolled as <strong>{{ joined.status }}</strong> for <strong>{{ joined.term }}</strong>.</p>
+        <form action="{{ url_for('leave_course', course_id=course.id) }}" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-danger">Leave Course</button>
+        </form>
+    {% elif user %}
+        <form action="{{ url_for('join_course', course_id=course.id) }}" method="post" style="margin-top:1em;">
+            <label for="status">Status:</label>
+            <select name="status" id="status" required>
+                <option value="student">Student</option>
+                <option value="tutor">Tutor</option>
+            </select>
+
+            <label for="term">Term:</label>
+            <input type="text" name="term" id="term" placeholder="Fall'25" required>
+
+            <button type="submit" class="btn btn-primary">Join Course</button>
+        </form>
+    {% else %}
+        <p><a href="{{ url_for('login') }}">Log in</a> to join this course.</p>
+    {% endif %}
+
+    <!-- Users in this course -->
     <h2>Users in this course</h2>
-    {% if enrolled_users %}
+    {% if course.user_courses %}
         <ul class="course-users">
-        {% for u in enrolled_users %}
+        {% for uc in course.user_courses %}
             <li>
-                <a href="{{ url_for('profile_view', user_id=u.id) }}">{{ u.username }}</a>
+                <a href="{{ url_for('profile_view', user_id=uc.user.id) }}">{{ uc.user.username }}</a>
+                - {{ uc.status }} ({{ uc.term }})
             </li>
         {% endfor %}
         </ul>
