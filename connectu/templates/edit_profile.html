@@ -18,7 +18,6 @@
         <label for="personal_links">Personal Links</label>
         <textarea name="personal_links" id="personal_links" rows="3" placeholder="Zoom, LinkedIn, etc.">{{ user.personal_links or '' }}</textarea>
 
-
         <button type="submit" class="btn-primary">Save Changes</button>
         <a href="{{ url_for('profile') }}" class="btn-secondary">Cancel</a>
     </form>
