@@ -220,7 +220,7 @@ def profile():
         flash("User not found.", "warning")
         return redirect(url_for("index"))
 
-    return render_template("profile.html", user=user, user_courses=[uc.course for uc in user.user_courses])
+    return render_template("profile.html", user=user, user_courses=user.user_courses)
 
 
 @app.route("/profile/<int:user_id>", endpoint="profile_view")
