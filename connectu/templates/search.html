@@ -17,14 +17,25 @@
         <li>
             {{ c.course_code }} - {{ c.title }}
             {% if 'user' in session %}
-                {% set joined = false %}
-                    {% for uc in user.user_courses %}
-                        {% if uc.course.id == c.id %}
-                            {% set joined = true %}
-                        {% endif %}
-                    {% endfor %}
-                {% if not joined %}
-                    <button type="button" class="btn-primary btn-sm" onclick="openJoinModal({{ c.id }})">Join Course</button>
+                {% if c not in user.courses %}
+                <form action="{{ url_for('join_course', course_id=c.id) }}"
+                    method="post"
+                    style="display:inline;">
+                    <!-- include CSRF token if using Flask‑WTF -->
+                    <select name="status">
+                        <option value="enrolled">Enrolled</option>
+                        <option value="waitlist">Waitlist</option>
+                        <option value="dropped">Dropped</option>
+                    </select>
+                
+                    <select name="term">
+                        <option value="Fall_2025">Fall 2025</option>
+                        <option value="Spring_2026">Spring 2026</option>
+                        <option value="Summer_2026">Summer 2026</option>
+                    </select>
+                
+                    <button type="submit" class="btn-primary btn-sm">Join Course</button>
+                </form>
                 {% else %}
                     <span class="joined-label">Joined</span>
                 {% endif %}
