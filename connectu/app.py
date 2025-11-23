@@ -270,9 +270,6 @@ def join_course(course_id):
 
     return redirect(request.referrer or url_for('course_detail', course_code=course.course_code))
 
-
-
-
 # ===== Run App =====
 if __name__ == "__main__":
     with app.app_context():
