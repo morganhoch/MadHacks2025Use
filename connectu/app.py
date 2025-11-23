@@ -230,7 +230,15 @@ def edit_profile():
       user.username = request.form.get("username", user.username)
       user.bio = request.form.get("bio", user.bio)
       user.available_days = request.form.getlist("available_days") or []
-      user.available_times = request.form.getlist("available_times") or []
+      available_times = {}
+      for day in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]:
+            key = f"available_times[{day}]"
+            if key in request.form:
+                available_times[day] = request.form.getlist(key)
+            else:
+                available_times[day] = []
+
+      user.available_times = available_times
       user.personal_links = request.form.get("personal_links", user.personal_links)
       user.avatar_url = request.form.get("avatar_url", user.avatar_url)
       db.session.commit()
