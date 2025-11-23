@@ -4,11 +4,9 @@ from authlib.integrations.flask_client import OAuth
 from flask_session import Session
 from dotenv import load_dotenv
 import os, secrets
-from models import db, User, DirectMessage, Course, Question, Answer  # import all models at once
+from models import db, User, DirectMessage, Course, Question, Answer, UserCourse
 from messaging_routes import messaging_bp
 from populate_courses import populate_courses
-import requests
-import os
 
 # ===== Load environment variables =====
 load_dotenv()
@@ -25,20 +23,7 @@ app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_USE_SIGNER'] = True
 Session(app)
 
-MADGRADES_API_TOKEN = os.getenv("MADGRADES_API_TOKEN")
-BASE_URL = "https://api.madgrades.com/v1"
-
-def get_madgrades_course(uuid):
-    headers = {
-        "Authorization": f"Token token={MADGRADES_API_TOKEN}"
-    }
-    response = requests.get(f"{BASE_URL}/courses/{uuid}", headers=headers)
-    if response.status_code == 200:
-        return response.json()  # returns a dict with course info
-    return None
-
 # ===== Database Setup =====
-# Use Railway Postgres
 db_path = os.path.join(basedir, 'instance', 'connectu.db')
 os.makedirs(os.path.dirname(db_path), exist_ok=True)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + db_path
@@ -70,11 +55,13 @@ def index():
             user_courses = user_obj.courses
     return render_template("index.html", user=user_obj, user_courses=user_courses)
 
+
 @app.route("/login")
 def login():
     session["nonce"] = secrets.token_urlsafe(16)
     redirect_uri = os.getenv("AUTH0_CALLBACK_URL")
     return auth0.authorize_redirect(redirect_uri=redirect_uri, nonce=session["nonce"])
+
 
 @app.route("/callback")
 def callback():
@@ -103,6 +90,7 @@ def callback():
 
     return redirect(url_for("index"))
 
+
 @app.route("/logout")
 def logout():
     session.clear()
@@ -112,9 +100,11 @@ def logout():
         f"client_id={os.getenv('AUTH0_CLIENT_ID')}"
     )
 
+
 @app.route("/inbox")
 def inbox():
     return render_template("inbox.html")
+
 
 @app.route("/course/<course_code>", methods=["GET", "POST"])
 def course_detail(course_code):
@@ -124,17 +114,6 @@ def course_detail(course_code):
     if 'user' in session:
         user_obj = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
 
-    # Fetch Madgrades info if available
-    madgrades_info = None
-    if course.madgrades_uuid:
-        print(f"Fetching Madgrades data for UUID: {course.madgrades_uuid}")  # debug print
-        madgrades_info = get_madgrades_course(course.madgrades_uuid)
-        print("Madgrades response:", madgrades_info)  # debug print
-
-    else:
-        print("No Madgrades UUID for this course")  # debug print
-
-    # Existing Q&A logic...
     questions = Question.query.filter_by(course_id=course.id).order_by(Question.timestamp.desc()).all()
     enrolled_users = course.students
 
@@ -143,8 +122,7 @@ def course_detail(course_code):
         course=course,
         questions=questions,
         user=user_obj,
-        enrolled_users=enrolled_users,
-        madgrades_info=madgrades_info  # pass it to the template
+        enrolled_users=enrolled_users
     )
 
 
@@ -157,6 +135,7 @@ def search():
     if 'user' in session:
         user_obj = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
     return render_template("search.html", query=query, results=results, user=user_obj)
+
 
 @app.route("/leave_course/<int:course_id>", methods=['POST'])
 def leave_course(course_id):
@@ -188,10 +167,12 @@ def profile():
 
     return render_template("profile.html", user=user, user_courses=user.courses)
 
+
 @app.route("/profile/<int:user_id>", endpoint="profile_view")
 def profile_view(user_id):
     user = User.query.get_or_404(user_id)
     return render_template("profile.html", user=user, user_courses=user.courses)
+
 
 @app.route("/profile/edit", methods=["GET", "POST"])
 def edit_profile():
@@ -215,6 +196,7 @@ def edit_profile():
         return redirect(url_for("profile"))
 
     return render_template("edit_profile.html", user=user)
+
 
 @app.route("/join_course/<int:course_id>", methods=['POST'])
 def join_course(course_id):
@@ -241,10 +223,10 @@ def join_course(course_id):
 
     return redirect(request.referrer or url_for('search'))
 
+
 # ===== Run App =====
 if __name__ == "__main__":
     with app.app_context():
         xml_file = os.path.join(os.path.dirname(__file__), "courses_sitemap.xml")
-        populate_courses(app, xml_file)  # pass app and XML path
+        populate_courses(app, xml_file)  # populate courses from XML
     app.run()
-
