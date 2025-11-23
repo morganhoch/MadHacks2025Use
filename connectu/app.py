@@ -225,12 +225,19 @@ def join_course(course_id):
     user = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
     course = Course.query.get_or_404(course_id)
 
-    if course in user.courses:
-        flash("You have already joined this course.")
+    # Get status and term from form
+    status = request.form.get("status", "student")
+    term = request.form.get("term", None)
+
+    # Check if already joined
+    existing = UserCourse.query.filter_by(user_id=user.id, course_id=course.id).first()
+    if existing:
+        flash("You have already joined this course.", "warning")
     else:
-        user.courses.append(course)
+        user_course = UserCourse(user=user, course=course, status=status, term=term)
+        db.session.add(user_course)
         db.session.commit()
-        flash(f"You have joined {course.course_code}!")
+        flash(f"You have joined {course.course_code} as a {status} for {term}!")
 
     return redirect(request.referrer or url_for('search'))
 
