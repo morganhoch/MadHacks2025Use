@@ -9,12 +9,6 @@
         <a href="{{ url_for('messaging.direct_message', recipient_id=row.user.id) }}">
             {{ row.user.username or row.user.email }}
         </a>
-        {% if row.is_sender %}
-            (they are sender; sender_id={{ row.sender_id }})
-        {% endif %}
-        {% if row.is_recipient %}
-            (they are recipient; recipient_id={{ row.recipient_id }})
-        {% endif %}
         </li>
     {% endfor %}
     </ul>
