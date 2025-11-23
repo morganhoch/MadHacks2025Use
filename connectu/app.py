@@ -7,7 +7,8 @@ import os, secrets
 from models import db, User, DirectMessage, Course, Question, Answer  # import all models at once
 from messaging_routes import messaging_bp
 from populate_courses import populate_courses
-
+import requests
+import os
 
 # ===== Load environment variables =====
 load_dotenv()
@@ -23,6 +24,18 @@ app.config['SESSION_FILE_DIR'] = os.path.join(basedir, 'flask_session')
 app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_USE_SIGNER'] = True
 Session(app)
+
+MADGRADES_API_TOKEN = os.getenv("MADGRADES_API_TOKEN")
+BASE_URL = "https://api.madgrades.com/v1"
+
+def get_madgrades_course(uuid):
+    headers = {
+        "Authorization": f"Token token={MADGRADES_API_TOKEN}"
+    }
+    response = requests.get(f"{BASE_URL}/courses/{uuid}", headers=headers)
+    if response.status_code == 200:
+        return response.json()  # returns a dict with course info
+    return None
 
 # ===== Database Setup =====
 # Use Railway Postgres
