@@ -14,7 +14,18 @@
     <h2>Results:</h2>
     <ul>
     {% for c in results %}
-        <li><a href="{{ url_for('course_detail', course_code=c.course_code) }}">{{ c.course_code }} - {{ c.title }}</a></li>
+        <li>
+            {{ c.course_code }} - {{ c.title }}
+            {% if 'user' in session %}
+                {% if c not in user.courses %}
+                    <form action="{{ url_for('join_course', course_id=c.id) }}" method="post" style="display:inline;">
+                        <button type="submit" class="btn-primary btn-sm">Join Course</button>
+                    </form>
+                {% else %}
+                    <span class="joined-label">Joined</span>
+                {% endif %}
+            {% endif %}
+        </li>
     {% endfor %}
     </ul>
 {% elif query %}
