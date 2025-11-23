@@ -161,16 +161,22 @@ def edit_profile():
 @app.route("/search")
 def search():
     query = request.args.get("q", "").strip()
-
-    # Normalize query
     cleaned = query.replace("|", "").strip().upper()
 
-    # Search with OR conditions
-    results = Course.query.filter(
-        Course.course_code.like(f"%{cleaned}%")
-    ).all()
+    results = Course.query.filter(Course.course_code.like(f"%{cleaned}%")).all()
 
-    return render_template("search.html", query=query, results=results)
+    # Get the logged-in user from session (if any)
+    user_obj = None
+    if 'user' in session:
+        user_obj = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
+
+    return render_template(
+        "search.html",
+        query=query,
+        results=results,
+        user=user_obj  # pass user to template
+    )
+
 
 @app.route("/logout")
 def logout():
