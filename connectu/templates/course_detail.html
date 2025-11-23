@@ -99,7 +99,7 @@
             <p>No questions yet.</p>
         {% endif %}
 
-    <!-- ===== Document Upload Section ===== -->
+  <!-- ===== Document Upload Section ===== -->
 <section class="class-documents" style="margin-top: 2em;">
     <h3>Class Documents</h3>
 
@@ -110,34 +110,32 @@
     </form>
 
     <!-- Document Gallery -->
-    <div class="document-gallery" style="display: flex; flex-wrap: wrap; gap: 20px; max-height: 600px; overflow-y: auto;">
+    <div class="document-gallery" style="display: flex; flex-direction: column; gap: 10px; max-height: 500px; overflow-y: auto;">
         {% for doc in course.documents %}
-            {% set ext = doc.filename.split('.')[-1].lower() %}
-            {% if ext in ['png', 'jpg', 'jpeg', 'gif'] %}
-                {% set icon = url_for('static', filename='uploads/' + doc.filename) %}
-            {% elif ext == 'pdf' %}
-                {% set icon = url_for('static', filename='icons/pdf.png') %}
-            {% elif ext == 'docx' %}
-                {% set icon = url_for('static', filename='icons/docx.png') %}
-            {% elif ext == 'pptx' %}
-                {% set icon = url_for('static', filename='icons/pptx.png') %}
-            {% elif ext == 'txt' %}
-                {% set icon = url_for('static', filename='icons/txt.png') %}
-            {% else %}
-                {% set icon = url_for('static', filename='icons/file.png') %}
-            {% endif %}
-
-            <div class="doc-card" style="width: 150px; border: 1px solid #ba0c2f; border-radius: 10px; padding: 10px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.1); text-align: center;">
-                <a href="{{ url_for('static', filename='uploads/' + doc.filename) }}" target="_blank">
-                    <img src="{{ icon }}" alt="{{ ext }} icon" style="width: 100px; height: 100px; object-fit: cover; margin-bottom: 10px; border-radius: 6px;">
-                    <div style="font-weight: 700; color: #ba0c2f; font-size: 0.9em; word-wrap: break-word;">{{ doc.filename }}</div>
-                </a>
-                <p style="font-size: 0.75em; color: #555; margin: 5px 0 0;">Uploaded by {{ doc.user.username }}</p>
-                <p style="font-size: 0.7em; color: #888; margin: 2px 0 0;">{{ doc.uploaded_at.strftime('%Y-%m-%d') }}</p>
+            <div class="doc-preview" style="border: 1px solid #ba0c2f; border-radius: 8px; padding: 10px; display: flex; align-items: center; gap: 10px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+                {% set ext = doc.filename.split('.')[-1].lower() %}
+                {% if ext in ['png', 'jpg', 'jpeg', 'gif'] %}
+                    <img src="{{ url_for('static', filename='uploads/' + doc.filename) }}" alt="{{ doc.filename }}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 4px;">
+                {% elif ext == 'pdf' %}
+                    <img src="{{ url_for('static', filename='icons/pdf.png') }}" alt="PDF" style="width: 50px; height: 50px; margin-top: 10px;">
+                {% elif ext == 'docx' %}
+                    <img src="{{ url_for('static', filename='icons/docx.png') }}" alt="DOCX" style="width: 50px; height: 50px; margin-top: 10px;">
+                {% elif ext == 'pptx' %}
+                    <img src="{{ url_for('static', filename='icons/pptx.png') }}" alt="PPTX" style="width: 50px; height: 50px; margin-top: 10px;">
+                {% elif ext == 'txt' %}
+                    <img src="{{ url_for('static', filename='icons/txt.png') }}" alt="TXT" style="width: 50px; height: 50px; margin-top: 10px;">
+                {% else %}
+                    <img src="{{ url_for('static', filename='icons/file.png') }}" alt="File" style="width: 50px; height: 50px; margin-top: 10px;">
+                {% endif %}
+                <div style="flex: 1;">
+                    <a href="{{ url_for('static', filename='uploads/' + doc.filename) }}" target="_blank" style="font-weight: 700; color: #ba0c2f;">{{ doc.filename }}</a>
+                    <p style="font-size: 0.85em; color: #555; margin: 3px 0;">Uploaded by {{ doc.user.username }} at {{ doc.uploaded_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                </div>
             </div>
         {% endfor %}
     </div>
 </section>
+
 
 
     <!-- Sidebar -->
