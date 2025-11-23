@@ -45,11 +45,13 @@
         {% block content %}{% endblock %}
     </main>
 
-    <footer>
-      <div style="text-align: center;">
-        <p style="text-align: center;">2025 ConnectU • Made at MadHacks2025!
-          <img src="{{ url_for('static', filename='connectlogo.png') }}" alt="ConnectU Logo" style="height: 60px;">
+    <footer style="background: #bee0fb; padding: 1.2em 0;">
+      <div style="display: flex; align-items: center; justify-content: center;">
+        <p style="margin: 0; font-size: 2em; font-weight: bold; color: #ba0c2f;">
+          2025 ConnectU • Made at MadHacks2025!
         </p>
+        <img src="{{ url_for('static', filename='connectlogo.png') }}" alt="ConnectU Logo"
+             style="height: 60px; margin-left: 20px;">
       </div>
     </footer>
 </body>
