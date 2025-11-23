@@ -221,13 +221,18 @@ def profile():
         flash("User not found.", "warning")
         return redirect(url_for("index"))
 
-    return render_template("profile.html", user=user, user_courses=user.user_courses)
+    return render_template("profile.html", user=user, user_courses=user.user_courses, current_user_id=user.id)
 
 
 @app.route("/profile/<int:user_id>", endpoint="profile_view")
 def profile_view(user_id):
     user = User.query.get_or_404(user_id)
-    return render_template("profile.html", user=user, user_courses=user.user_courses)
+    current_user_id = None
+    if "user" in session:
+        current_user = User.query.filter_by(auth0_id=session["user"]["auth0_id"]).first()
+        if current_user:
+            current_user_id = current_user.id
+    return render_template("profile.html", user=user, user_courses=user.user_courses, current_user_id=current_user_id)
 
 
 @app.route("/profile/edit", methods=["GET", "POST"])
