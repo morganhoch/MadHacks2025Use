@@ -34,3 +34,23 @@ class Course(db.Model):
     title = db.Column(db.String(200))
     description = db.Column(db.Text)
 
+class Question(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    course = db.relationship('Course', backref='questions', lazy=True)
+    user = db.relationship('User', backref='questions', lazy=True)
+
+
+class Answer(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    question_id = db.Column(db.Integer, db.ForeignKey('question.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    question = db.relationship('Question', backref='answers', lazy=True)
+    user = db.relationship('User', backref='answers', lazy=True)
