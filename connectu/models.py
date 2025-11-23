@@ -39,7 +39,7 @@ class Course(db.Model):
     title = db.Column(db.String(200))
     description = db.Column(db.Text)
     students = db.relationship('UserCourse', back_populates='course', lazy=True)
-    documents = db.relationship('Document', back_populates='course', lazy=True)
+    documents = db.relationship('Document', back_populates='course')
 
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
