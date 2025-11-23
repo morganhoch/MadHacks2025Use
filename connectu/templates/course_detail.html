@@ -10,24 +10,28 @@
         <p>{{ course.description }}</p>
     {% endif %}
 
-    {% if user in course.students %}
-    <form action="{{ url_for('leave_course', course_id=course.id) }}" method="post" style="display:inline;">
-        <button type="submit" class="btn btn-danger">Leave Course</button>
-    </form>
-    {% endif %}
+    {% if user %}
+    {% for uc in course.students %}
+        {% if uc.user.id == user.id %}
+            <form action="{{ url_for('leave_course', course_id=course.id) }}" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-danger">Leave Course</button>
+            </form>
+        {% endif %}
+    {% endfor %}
+{% endif %}
 
-    <h2>Users in this course</h2>
-    {% if enrolled_users %}
-        <ul class="course-users">
-        {% for u in enrolled_users %}
-            <li>
-                <a href="{{ url_for('profile_view', user_id=u.id) }}">{{ u.username }}</a>
-            </li>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <p>No one has joined this course yet.</p>
-    {% endif %}
+<h2>Users in this course</h2>
+{% if course.students %}
+    <ul class="course-users">
+    {% for uc in course.students %}
+        <li>
+            <a href="{{ url_for('profile_view', user_id=uc.user.id) }}">{{ uc.user.username }}</a>
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No one has joined this course yet.</p>
+{% endif %}
 
     <hr>
     <h2>Ask a Question</h2>
