@@ -229,7 +229,8 @@ def edit_profile():
     if request.method == "POST":
       user.username = request.form.get("username", user.username)
       user.bio = request.form.get("bio", user.bio)
-      user.availability = request.form.get("availability", user.availability)
+      user.available_days = request.form.getlist("available_days") or []
+      user.available_times = request.form.getlist("available_times") or []
       user.personal_links = request.form.get("personal_links", user.personal_links)
       user.avatar_url = request.form.get("avatar_url", user.avatar_url)
       db.session.commit()
