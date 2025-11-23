@@ -22,5 +22,43 @@
     {% else %}
         <p>No one has joined this course yet.</p>
     {% endif %}
+
+    <hr>
+
+    <h2>Ask a Question</h2>
+    {% if session.user %}
+        <form method="POST">
+            <textarea name="content" placeholder="Type your question here..." required></textarea>
+            <button type="submit" name="question">Post Question</button>
+        </form>
+    {% else %}
+        <p><a href="{{ url_for('login') }}">Log in</a> to ask a question.</p>
+    {% endif %}
+
+    <h2>Questions & Answers</h2>
+    {% if questions %}
+        {% for q in questions %}
+            <div class="question-block">
+                <p><strong>{{ q.user.username }}</strong> asked:</p>
+                <p>{{ q.content }}</p>
+
+                <ul>
+                {% for a in q.answers %}
+                    <li><strong>{{ a.user.username }}</strong> answered: {{ a.content }}</li>
+                {% endfor %}
+                </ul>
+
+                {% if session.user %}
+                    <form method="POST">
+                        <textarea name="content" placeholder="Type your answer here..." required></textarea>
+                        <input type="hidden" name="question_id" value="{{ q.id }}">
+                        <button type="submit" name="answer">Post Answer</button>
+                    </form>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No questions yet. Be the first to ask!</p>
+    {% endif %}
 </div>
 {% endblock %}
