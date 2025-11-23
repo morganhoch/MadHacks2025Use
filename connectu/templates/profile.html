@@ -27,6 +27,24 @@
         <a href="{{ url_for('inbox') }}" class="btn-secondary">Message Me</a>
     </div>
 
+    <!-- Joined Classes -->
+    <div class="profile-classes">
+        <h3>Joined Classes</h3>
+        {% if user_courses %}
+            <ul>
+            {% for c in user_courses %}
+                <li>
+                    <a href="{{ url_for('course_detail', course_code=c.course_code) }}">
+                        {{ c.course_code }} - {{ c.title }}
+                    </a>
+                </li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>You haven't joined any classes yet.</p>
+        {% endif %}
+    </div>
+
     <!-- Friends list -->
     <div class="profile-friends">
         <h3>Friends</h3>
@@ -87,3 +105,4 @@
     </div>
 </div>
 {% endblock %}
+
