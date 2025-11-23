@@ -138,8 +138,9 @@ def course_detail(course_code):
                 
     # Existing Q&A logic
     questions = Question.query.filter_by(course_id=course.id).order_by(Question.timestamp.desc()).all()
-    enrolled_users = [uc.user for uc in course.students]  # this is a list of UserCourse objects
-
+    # enrolled_users = [uc.user for uc in course.students]  # this is a list of UserCourse objects
+    enrolled_users = course.students
+    
     return render_template(
         "course_detail.html",
         course=course,
