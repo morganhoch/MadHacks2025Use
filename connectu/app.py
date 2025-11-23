@@ -299,36 +299,47 @@ def join_course(course_id):
 
 @app.route('/course/<int:course_id>/upload', methods=['POST'])
 def upload_document(course_id):
+    # 1️⃣ Ensure user is logged in
     if 'user' not in session:
         flash("You must be logged in to upload documents.", "warning")
-        return redirect(request.referrer)
+        return redirect(request.referrer or url_for('course_detail', course_code=Course.query.get(course_id).course_code))
 
+    # 2️⃣ Get file from form
     file = request.files.get('document')
     if not file or file.filename == '':
         flash('No file selected', 'warning')
         return redirect(request.referrer)
 
-    if allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-
-        # Make sure folder exists
-        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(filepath)
-
-        user_obj = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
-        new_doc = Document(filename=filename, filepath=filepath, course_id=course_id, user_id=user_obj.id)
-        db.session.add(new_doc)
-        db.session.commit()
-
-        flash('Document uploaded successfully!', 'success')
-
-        course = Course.query.get_or_404(course_id)
-        return redirect(url_for('course_detail', course_code=course.course_code))
-    else:
+    # 3️⃣ Check allowed file types
+    if not allowed_file(file.filename):
         flash('Invalid file type', 'warning')
         return redirect(request.referrer)
+
+    # 4️⃣ Secure filename and save
+    filename = secure_filename(file.filename)
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    file.save(filepath)
+
+    # 5️⃣ Get user from session
+    user_obj = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
+    if not user_obj:
+        flash("User not found in database.", "danger")
+        return redirect(request.referrer)
+
+    # 6️⃣ Save document to DB
+    new_doc = Document(
+        filename=filename,
+        filepath=filepath,
+        course_id=course_id,
+        user_id=user_obj.id
+    )
+    db.session.add(new_doc)
+    db.session.commit()
+
+    flash('Document uploaded successfully!', 'success')
+    course = Course.query.get_or_404(course_id)
+    return redirect(url_for('course_detail', course_code=course.course_code))
+
 
 
 # ===== Run App =====
