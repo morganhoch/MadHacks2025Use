@@ -114,16 +114,18 @@ def course_detail(course_code):
     if 'user' in session:
         user_obj = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
 
+    # Existing Q&A logic
     questions = Question.query.filter_by(course_id=course.id).order_by(Question.timestamp.desc()).all()
-    enrolled_users = course.students
+    enrolled_users = course.students  # this is a list of UserCourse objects
 
     return render_template(
         "course_detail.html",
         course=course,
         questions=questions,
         user=user_obj,
-        enrolled_users=enrolled_users
+        enrolled_users=enrolled_users,  # okay to keep, just use uc.user in template
     )
+
 
 @app.route("/remove_question/<int:question_id>", methods=["POST"])
 def remove_question(question_id):
