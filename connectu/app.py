@@ -7,7 +7,7 @@ import os, secrets
 from models import db, User, DirectMessage, Course, Question, Answer  # import all models at once
 from messaging_routes import messaging_bp
 from populate_courses import populate_courses
-import import requests
+import requests
 import os
 
 # ===== Load environment variables =====
