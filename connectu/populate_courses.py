@@ -43,7 +43,7 @@ def get_madgrades_info(course_code):
     return {"uuid": None, "title": "", "description": ""}
 
 # Main function to populate courses
-def populate_courses():
+def populate_courses_db():
     courses_data = load_courses_from_xml(xml_file)
 
     with app.app_context():
@@ -67,4 +67,4 @@ def populate_courses():
         print("Courses repopulated successfully!")
 
 if __name__ == "__main__":
-    populate_courses()
+    populate_courses_db()
