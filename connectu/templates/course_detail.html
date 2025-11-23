@@ -43,7 +43,7 @@
     </p>
     <p><strong>Instructor(s):</strong>
         {% if madgrades_info.instructors %}
-            {% for inst in madgrades_infos.instructors %}
+            {% for inst in madgrades_info.instructors %}
                 {{ inst.name }}{% if not loop.last %}, {% endif %}
             {% endfor %}
         {% else %}
