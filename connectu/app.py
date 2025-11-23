@@ -99,12 +99,6 @@ def logout():
         f"client_id={os.getenv('AUTH0_CLIENT_ID')}"
     )
 
-
-@app.route("/inbox")
-def inbox():
-    return render_template("inbox.html")
-
-
 @app.route("/course/<course_code>", methods=["GET", "POST"])
 def course_detail(course_code):
     course = Course.query.filter_by(course_code=course_code).first_or_404()
