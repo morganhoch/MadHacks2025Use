@@ -39,6 +39,7 @@ def inbox():
     sender_ids = db.session.query(DirectMessage.sender_id).filter_by(recipient_id=user.id).distinct()
     contact_ids = set([x[0] for x in recipient_ids] + [x[0] for x in sender_ids if x[0]])
     contact_ids.discard(user.id)
+    print(contact_ids)
     contacts = User.query.filter(User.id.in_(contact_ids)).all()
 
     contact_rows = []
