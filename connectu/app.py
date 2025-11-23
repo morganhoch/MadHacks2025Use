@@ -10,6 +10,11 @@ from populate_courses import populate_courses
 from flask import request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
 import os
+from flask import Flask, request, redirect, url_for, flash, render_template
+from werkzeug.utils import secure_filename
+from datetime import datetime
+from models import db, Course, Document, User
+
 
 # ===== Load environment variables =====
 load_dotenv()
@@ -292,30 +297,36 @@ def join_course(course_id):
 
 @app.route('/course/<int:course_id>/upload', methods=['POST'])
 def upload_document(course_id):
-    if 'document' not in request.files:
-        flash('No file part', 'warning')
-        return redirect(url_for('course_page', course_id=course_id))
-    
-    file = request.files['document']
-    if file.filename == '':
-        flash('No selected file', 'warning')
-        return redirect(url_for('course_page', course_id=course_id))
-    
-    if file and allowed_file(file.filename):
+    if 'user' not in session:
+        flash("You must be logged in to upload documents.", "warning")
+        return redirect(request.referrer)
+
+    file = request.files.get('document')
+    if not file or file.filename == '':
+        flash('No file selected', 'warning')
+        return redirect(request.referrer)
+
+    if allowed_file(file.filename):
         filename = secure_filename(file.filename)
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(filepath)
 
-        # Save to database
-        new_doc = Document(filename=filename, filepath=filepath, course_id=course_id, user_id=session['user']['id'])
+        # Get user from session
+        user_obj = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
+
+        # Save document to DB
+        new_doc = Document(filename=filename, filepath=filepath, course_id=course_id, user_id=user_obj.id)
         db.session.add(new_doc)
         db.session.commit()
 
         flash('Document uploaded successfully!', 'success')
-        return redirect(url_for('course_page', course_id=course_id))
+
+        course = Course.query.get_or_404(course_id)
+        return redirect(url_for('course_detail', course_code=course.course_code))
     else:
         flash('Invalid file type', 'warning')
-        return redirect(url_for('course_page', course_id=course_id))
+        return redirect(request.referrer)
+
 
 # ===== Run App =====
 if __name__ == "__main__":
