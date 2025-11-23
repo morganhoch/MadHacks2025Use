@@ -13,7 +13,7 @@
             <div class="nav-links">
                 <a href="{{ url_for('index') }}">Home</a>
                 <a href="{{ url_for('search') }}">Search</a>
-                <a href="{{ url_for('inbox') }}">Inbox</a>
+                <a href="{{ url_for('messaging.inbox') }}">Inbox</a>
                 {% if session.get('user') %}
                     <a href="{{ url_for('profile') }}">Profile</a>
                     <a href="{{ url_for('logout') }}" class="btn-logout">Logout</a>
