@@ -7,6 +7,9 @@ import os, secrets
 from models import db, User, DirectMessage, Course, Question, Answer, UserCourse
 from messaging_routes import messaging_bp
 from populate_courses import populate_courses
+from flask import request, redirect, url_for, flash
+from werkzeug.utils import secure_filename
+import os
 
 # ===== Load environment variables =====
 load_dotenv()
@@ -23,6 +26,12 @@ app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_USE_SIGNER'] = True
 Session(app)
 
+UPLOAD_FOLDER = 'static/uploads'
+ALLOWED_EXTENSIONS = {'pdf', 'docx', 'pptx', 'txt'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    
 # ===== Database Setup =====
 db_path = os.path.join(basedir, 'instance', 'connectu.db')
 os.makedirs(os.path.dirname(db_path), exist_ok=True)
@@ -281,6 +290,33 @@ def join_course(course_id):
         flash(f"You joined {course.course_code} as a {status} for {term}!", "success")
 
     return redirect(request.referrer or url_for('course_detail', course_code=course.course_code))
+
+@app.route('/course/<int:course_id>/upload', methods=['POST'])
+def upload_document(course_id):
+    if 'document' not in request.files:
+        flash('No file part', 'warning')
+        return redirect(url_for('course_page', course_id=course_id))
+    
+    file = request.files['document']
+    if file.filename == '':
+        flash('No selected file', 'warning')
+        return redirect(url_for('course_page', course_id=course_id))
+    
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(filepath)
+
+        # Save to database
+        new_doc = Document(filename=filename, filepath=filepath, course_id=course_id, user_id=session['user']['id'])
+        db.session.add(new_doc)
+        db.session.commit()
+
+        flash('Document uploaded successfully!', 'success')
+        return redirect(url_for('course_page', course_id=course_id))
+    else:
+        flash('Invalid file type', 'warning')
+        return redirect(url_for('course_page', course_id=course_id))
 
 # ===== Run App =====
 if __name__ == "__main__":
