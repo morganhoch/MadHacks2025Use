@@ -1,18 +1,23 @@
 {% extends "base.html" %}
 {% block title %}Inbox{% endblock %}
+
 {% block content %}
 <h2>Your Conversations</h2>
-    {% if contacts %}
-    <ul>
+
+{% if contacts %}
+<div class="inbox-container">
     {% for contact in contacts %}
-        <li>
-        <a href="{{ url_for('messaging.direct_message', recipient_id=contact.id) }}">
-            {{ contact.username or contact.email }}
-        </a>
-        </li>
+        <div class="conversation-box">
+            <p class="conversation-user">
+                {{ contact.username or contact.email }}
+            </p>
+            <a href="{{ url_for('messaging.direct_message', recipient_id=contact.id) }}" class="btn btn-primary">
+                Open messages with {{ contact.username or contact.email }}
+            </a>
+        </div>
     {% endfor %}
-    </ul>
-    {% else %}
-    <p>No conversations yet.</p>
-    {% endif %}
+</div>
+{% else %}
+<p>No conversations yet.</p>
+{% endif %}
 {% endblock %}
