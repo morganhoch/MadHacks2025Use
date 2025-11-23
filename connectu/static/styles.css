@@ -182,12 +182,6 @@ footer {
     color: #555;
 }
 
-.profile-details h3 {
-    margin-top: 1.5em;
-    margin-bottom: 0.5em;
-    color: #1e3a8a;
-}
-
 .profile-actions {
     margin-top: 2em;
     display: flex;
