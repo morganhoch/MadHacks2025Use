@@ -304,13 +304,14 @@ def upload_document(course_id):
 
     if allowed_file(file.filename):
         filename = secure_filename(file.filename)
+
+        # Make sure folder exists
+        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(filepath)
 
-        # Get user from session
         user_obj = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
-
-        # Save document to DB
         new_doc = Document(filename=filename, filepath=filepath, course_id=course_id, user_id=user_obj.id)
         db.session.add(new_doc)
         db.session.commit()
