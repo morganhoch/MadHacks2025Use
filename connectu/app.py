@@ -161,6 +161,23 @@ def logout():
         f"client_id={os.getenv('AUTH0_CLIENT_ID')}"
     )
 
+@app.route("/profile/<int:user_id>")
+def profile(user_id):
+    user = User.query.get_or_404(user_id)
+
+    # Friends: either requester or requested with status 'accepted'
+    friends = User.query.join(Friendship, ((Friendship.requester_id == User.id) | (Friendship.requested_id == User.id))).filter(
+        ((Friendship.requester_id == user.id) | (Friendship.requested_id == user.id)) &
+        (Friendship.status == 'accepted') &
+        (User.id != user.id)
+    ).all()
+
+    # Pending requests where current user is requested
+    pending_requests = Friendship.query.filter_by(requested_id=user.id, status='pending').all()
+
+    return render_template("profile.html", user=user, friends=friends, pending_requests=pending_requests)
+
+
 # ===== Run App =====
 if __name__ == "__main__":
     with app.app_context():
