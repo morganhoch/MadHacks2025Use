@@ -116,7 +116,7 @@ def course_detail(course_code):
 
     # Existing Q&A logic
     questions = Question.query.filter_by(course_id=course.id).order_by(Question.timestamp.desc()).all()
-    enrolled_users = course.students  # this is a list of UserCourse objects
+    enrolled_users = [uc.user for uc in course.students]  # this is a list of UserCourse objects
 
     return render_template(
         "course_detail.html",
@@ -155,10 +155,9 @@ def leave_course(course_id):
     if 'user' not in session:
         flash("You must be logged in to leave a course.")
         return redirect(url_for('login'))
-    user = User.query.filter_by(auth0_id=session['user']['auth0_id']).first()
-    course = Course.query.get_or_404(course_id)
-    if course in user.courses:
-        user.courses.remove(course)
+    uc = UserCourse.query.filter_by(user_id=user.id, course_id=course.id).first()
+    if uc:
+        db.session.delete(uc)
         db.session.commit()
         flash(f"You have left {course.course_code}.", "info")
     else:
@@ -178,13 +177,13 @@ def profile():
         flash("User not found.", "warning")
         return redirect(url_for("index"))
 
-    return render_template("profile.html", user=user, user_courses=user.courses)
+    return render_template("profile.html", user=user, user_courses=[uc.course for uc in user.user_courses])
 
 
 @app.route("/profile/<int:user_id>", endpoint="profile_view")
 def profile_view(user_id):
     user = User.query.get_or_404(user_id)
-    return render_template("profile.html", user=user, user_courses=user.courses)
+    return render_template("profile.html", user=user, user_courses=[uc.course for uc in user.user_courses])
 
 
 @app.route("/profile/edit", methods=["GET", "POST"])
