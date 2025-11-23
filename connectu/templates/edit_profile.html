@@ -12,6 +12,13 @@
         <label for="bio">Bio</label>
         <textarea name="bio" id="bio" rows="4">{{ user.bio }}</textarea>
 
+        <label for="availability">Availability</label>
+<input type="text" name="availability" id="availability" value="{{ user.availability or '' }}" placeholder="e.g., Mon 3-5pm, Wed 6-8pm">
+
+<label for="personal_links">Personal Links</label>
+<textarea name="personal_links" id="personal_links" rows="3" placeholder="Zoom, LinkedIn, etc.">{{ user.personal_links or '' }}</textarea>
+
+
         <button type="submit" class="btn-primary">Save Changes</button>
         <a href="{{ url_for('profile') }}" class="btn-secondary">Cancel</a>
     </form>
