@@ -492,3 +492,12 @@ footer {
     opacity: 0.7;
 }
 
+.chat-list .msg-time {
+    font-size: 0.7em;
+    display: block;
+    margin-top: 3px;
+    opacity: 0.6;    /* Slightly lighter, optional */
+    line-height: 1.1;
+}
+
+
