@@ -493,14 +493,4 @@ footer {
     opacity: 0.7;
 }
 
-.home-logo-right {
-    position: absolute;
-    top: 62px;               /* adjust as needed based on navbar height */
-    right: 32px;             /* aligns with nav */
-    z-index: 10;
-}
-@media (max-width: 900px) {
-    .home-logo-right { display: none; }
-}
-
 
