@@ -228,6 +228,7 @@ def edit_profile():
         return redirect(url_for("index"))
 
     if request.method == "POST":
+        # Update all fields
         user.username = request.form.get("username", user.username)
         user.bio = request.form.get("bio", user.bio)
         user.availability = request.form.get("availability", user.availability)
@@ -236,7 +237,10 @@ def edit_profile():
         session["user"]["name"] = user.username
         flash("Profile updated successfully!", "success")
         return redirect(url_for("profile"))
-        return render_template("edit_profile.html", user=user)
+
+    # For GET request, render the form
+    return render_template("edit_profile.html", user=user)
+
 
 
 @app.route("/join_course/<int:course_id>", methods=['POST'])
