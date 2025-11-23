@@ -198,6 +198,7 @@ footer {
 }
 
 .btn-sm {
+    display: block;
     padding: 4px 10px;
     font-size: 0.85em;
     border-radius: 4px;
@@ -205,6 +206,7 @@ footer {
 }
 
 .btn-primary {
+    display: block;
     background: #ba0c2f;
     color: white;
     padding: 0.25em 0.75em;
@@ -214,10 +216,12 @@ footer {
 }
 
 .btn-primary:hover {
+    display: block;
     background: #9b0a27;
 }
 
 .btn-secondary {
+    display: block;
     background: #fff;
     color: #ba0c2f;
     padding: 0.6em 1.4em;
@@ -228,6 +232,7 @@ footer {
 }
 
 .btn-secondary:hover {
+    display: block;
     background: #fde7eb;
 }
 
