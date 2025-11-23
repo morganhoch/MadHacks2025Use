@@ -231,7 +231,7 @@ def edit_profile():
       user.bio = request.form.get("bio", user.bio)
       user.availability = request.form.get("availability", user.availability)
       user.personal_links = request.form.get("personal_links", user.personal_links)
-      user.avatar_url = request.form.get("avatar_url", user.avatar_url)  # <-- new line
+      user.avatar_url = request.form.get("avatar_url", user.avatar_url)
       db.session.commit()
       session["user"]["name"] = user.username
       flash("Profile updated successfully!", "success")
