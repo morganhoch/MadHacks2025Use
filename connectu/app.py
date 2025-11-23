@@ -236,23 +236,20 @@ def edit_profile():
         flash("User not found.", "warning")
         return redirect(url_for("index"))
     if request.method == "POST":
-      user.username = request.form.get("username", user.username)
-      user.bio = request.form.get("bio", user.bio)
-      available_times = {}
-      for day in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]:
-            key = f"available_times[{day}]"
-            if key in request.form:
-                available_times[day] = request.form.getlist(key)
-            else:
-                available_times[day] = []
+        user.username = request.form.get("username", user.username)
+        user.bio = request.form.get("bio", user.bio)
+        available_times = {}
+        for day in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]:
+            available_times[day] = request.form.getlist(f"available_times[{day}][]") or []
+        
 
-      user.available_times = available_times
-      user.personal_links = request.form.get("personal_links", user.personal_links)
-      user.avatar_url = request.form.get("avatar_url", user.avatar_url)
-      db.session.commit()
-      session["user"]["name"] = user.username
-      flash("Profile updated successfully!", "success")
-      return redirect(url_for("profile"))
+        user.available_times = available_times
+        user.personal_links = request.form.get("personal_links", user.personal_links)
+        user.avatar_url = request.form.get("avatar_url", user.avatar_url)
+        db.session.commit()
+        session["user"]["name"] = user.username
+        flash("Profile updated successfully!", "success")
+        return redirect(url_for("profile"))
 
     # For GET request, render the form
     return render_template("edit_profile.html", user=user)
