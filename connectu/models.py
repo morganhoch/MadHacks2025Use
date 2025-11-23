@@ -2,7 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
 db = SQLAlchemy()
-
+#35rUlj6WjkJKWT79AR8OR907AGg_36o9L39otApbaHZRsiJ8V GROK
 # Association table for users joining courses -> Many to Many relationship
 user_courses = db.Table('user_courses',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
